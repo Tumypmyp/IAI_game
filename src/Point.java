@@ -1,7 +1,7 @@
 import java.util.Objects;
 
 public class Point {
-    int x, y;
+    public int x, y;
     private final int hashCode;
 
     Point(int x, int y) {

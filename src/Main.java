@@ -1,8 +1,8 @@
 public class Main {
 
     public static void main(String[] args) {
-        Game game = new Game();
-        game.player.play();
+        System.out.println(new Game(12345679).run());
+
     }
 }
 

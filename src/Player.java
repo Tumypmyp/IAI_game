@@ -6,8 +6,8 @@ public class Player {
     int timer;
     int perception;
     boolean haveBook = false;
-    Game game;
-    Strategy strategy;
+    final Game game;
+    final Strategy strategy;
     final static Point[] MOVES = new Point[9];
 
     Player(Game game, int perception, Strategy strategy) {

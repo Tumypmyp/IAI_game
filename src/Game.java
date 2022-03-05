@@ -4,15 +4,15 @@ public class Game {
     final static int ROWS = 9;
     final static int COLUMNS = 9;
 
-    final Random random;
-    private final Map<Card, Point> board = new HashMap<>();
-    final int[][] history = new int[ROWS][COLUMNS];
+    final private Map<Card, Point> board = new HashMap<>();
+    final private int[][] history = new int[ROWS][COLUMNS];
+    final private Random random;
 
-    final public Player player;
-    Status status;
+    final private Player player;
+    public Status status;
 
-    Game() {
-        random = new Random(12345679);
+    Game(int seed) {
+        random = new Random(seed);
 
         player = new Player(this, 1, new Strategy());
         board.put(Card.PLAYER, player.coordinates);
@@ -28,6 +28,14 @@ public class Game {
 
         status = Status.STARTED;
     }
+
+    public String run() {
+        player.play();
+//        return status == Status.LOST ? -1 : player.timer;
+        return status  + " in " + player.timer + " moves";
+    }
+
+
     public List<Card> getCardsByPoint(Point p) {
         List<Card> result = new ArrayList<>();
         for (Map.Entry<Card, Point> entry : board.entrySet()) {
