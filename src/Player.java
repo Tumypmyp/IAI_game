@@ -40,7 +40,7 @@ public class Player {
         game.print();
     }
 
-    public List<Card> getCardsByPoint(Point p) {
+    public List<Card> getVisibleCardsByPoint(Point p) {
         Point diff = Point.add(p, Point.not(coordinates));
         if (Math.abs(diff.x) <= perception && Math.abs(diff.y) <= perception)
             return game.getCardsByPoint(p);
