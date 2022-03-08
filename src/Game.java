@@ -11,7 +11,9 @@ public class Game {
     final private Random random;
 
     final private Player player;
+
     final private Point PLAYER;
+    final private Point EXIT;
     public Status status;
 
     Game(int seed) {
@@ -23,29 +25,24 @@ public class Game {
 
         random = new Random(seed);
 
-        Point EXIT = new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS));
-        getCardsByPoint(EXIT).add(Card.EXIT);
-//        board.get(EXIT.x).get(EXIT.y).add(Card.EXIT);
+        addCat(2);
+        addCat(3);
+        addBook();
+        addCloak();
+        EXIT = addExit();
 
         player = new Player(this, 1, EXIT, new Strategy());
         PLAYER = player.coordinates;
         getCardsByPoint(PLAYER).add(Card.PLAYER);
-//        board.get(PLAYER.x).get(PLAYER.y).add(Card.PLAYER);
-
-        Point BOOK = new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS));
-        getCardsByPoint(BOOK).add(Card.BOOK);
-//        board.get(BOOK.x).get(BOOK.y).add(Card.BOOK);
-
-        addCat(new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS)), 2);
-
-        addCat(new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS)), 3);
+        updateStatus();
 
         status = Status.STARTED;
     }
 
 
-    void addCat(Point CAT, int perception) {
-        board.get(CAT.x).get(CAT.y).add(Card.CAT);
+    void addCat(int perception) {
+        Point CAT = makeRandomPoint();
+        getCardsByPoint(CAT).add(Card.CAT);
         for (int i = -perception + 1; i < perception; i++)
             for (int j = -perception + 1; j < perception; j++) {
                 Point SEEN = Point.add(CAT, new Point(i, j));
@@ -54,8 +51,39 @@ public class Game {
             }
     }
 
-    public String run() {
-        player.play();
+    void addBook() {
+        // {0, 0}?
+        Point BOOK = makeRandomPoint();
+        while (getCardsByPoint(BOOK).contains(Card.SEEN)) {
+            BOOK = makeRandomPoint();
+        }
+        getCardsByPoint(BOOK).add(Card.BOOK);
+    }
+
+    Point addExit() {
+        Point EXIT = makeRandomPoint();
+        while (getCardsByPoint(EXIT).contains(Card.CAT) || getCardsByPoint(EXIT).contains(Card.BOOK)) {
+            EXIT = makeRandomPoint();
+        }
+        getCardsByPoint(EXIT).add(Card.EXIT);
+        return EXIT;
+    }
+
+    void addCloak() {
+        // {0, 0}?
+        Point CLOAK = makeRandomPoint();
+        while (getCardsByPoint(CLOAK).contains(Card.SEEN)) {
+            CLOAK = makeRandomPoint();
+        }
+        getCardsByPoint(CLOAK).add(Card.CLOAK);
+    }
+
+    Point makeRandomPoint() {
+        return new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS));
+    }
+
+    public String run(boolean debug) {
+        player.play(debug);
         return status + " in " + player.timer + " moves";
     }
 
@@ -75,12 +103,14 @@ public class Game {
             return;
         }
         List<Card> have = getCardsByPoint(PLAYER);
-        if (have.contains(Card.CAT) || have.contains(Card.SEEN)) {
+        if (have.contains(Card.CAT) || (have.contains(Card.SEEN) && !player.haveCloak)) {
             status = Status.LOST;
             return;
         }
         if (have.contains(Card.BOOK))
             player.haveBook = true;
+        if (have.contains(Card.CLOAK))
+            player.haveCloak = true;
 
         if (have.contains(Card.EXIT) && player.haveBook)
             status = Status.WON;

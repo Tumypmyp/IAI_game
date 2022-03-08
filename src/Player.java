@@ -6,6 +6,7 @@ public class Player {
     int timer;
     int perception;
     boolean haveBook = false;
+    boolean haveCloak = false;
     final Game game;
     final Strategy strategy;
     final static Point[] MOVES = new Point[9];
@@ -34,12 +35,24 @@ public class Player {
     }
 
 
-    public void play() {
-        game.print();
-        strategy.dfsToCard(Card.BOOK, new boolean[Game.ROWS][Game.COLUMNS]);
-        game.print();
-        strategy.dfsToCard(Card.EXIT, new boolean[Game.ROWS][Game.COLUMNS]);
-        game.print();
+    public void play(boolean debug) {
+        if (debug)
+            game.print();
+
+        boolean ok = strategy.dfsToCard(Card.BOOK, new boolean[Game.ROWS][Game.COLUMNS]);
+
+        if (debug)
+            game.print();
+
+        if (!ok && haveCloak)
+            ok = strategy.dfsToCard(Card.BOOK, new boolean[Game.ROWS][Game.COLUMNS]);
+
+        if (ok) {
+            ok = strategy.dfsToCard(Card.EXIT, new boolean[Game.ROWS][Game.COLUMNS]);
+            if (!ok && haveCloak) strategy.dfsToCard(Card.EXIT, new boolean[Game.ROWS][Game.COLUMNS]);
+        }
+        if (debug)
+            game.print();
     }
 
     public List<Card> getVisibleCardsByPoint(Point p) {
@@ -48,7 +61,6 @@ public class Player {
             return game.getCardsByPoint(p);
         return new ArrayList<>();
     }
-
 
 
 }

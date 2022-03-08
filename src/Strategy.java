@@ -1,11 +1,13 @@
 public class Strategy {
     Player player;
-    Strategy(){}
+
+    Strategy() {
+    }
 
     public boolean ok(Point p) {
         return 0 <= p.x && p.x < Game.ROWS && 0 <= p.y && p.y < Game.COLUMNS
                 && !player.getVisibleCardsByPoint(p).contains(Card.CAT)
-                && !player.getVisibleCardsByPoint(p).contains(Card.SEEN);
+                && (!player.getVisibleCardsByPoint(p).contains(Card.SEEN) || player.haveCloak);
     }
 
     public boolean dfsToCard(Card card, boolean[][] used) {

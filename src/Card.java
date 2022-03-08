@@ -4,4 +4,5 @@ public enum Card {
     BOOK,
     CAT,
     SEEN,
+    CLOAK,
 }
