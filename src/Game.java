@@ -7,8 +7,6 @@ public class Game {
     final static int COLUMNS = 9;
 
     final private List<List<List<Card>>> board = new ArrayList<>(ROWS);
-
-    //    final private Map<Point, List<Card>> board = new HashMap<>();
     final private int[][] history = new int[ROWS][COLUMNS];
     final private Random random;
 
@@ -17,26 +15,30 @@ public class Game {
     public Status status;
 
     Game(int seed) {
-        for (int i = 0; i < ROWS; i++)
+        for (int i = 0; i < ROWS; i++) {
             board.add(new ArrayList<>(COLUMNS));
-
-        for (int i = 0; i < ROWS; i++)
             for (int j = 0; j < COLUMNS; j++)
                 board.get(i).add(new ArrayList<>());
+        }
 
         random = new Random(seed);
 
         Point EXIT = new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS));
-        board.get(EXIT.x).get(EXIT.y).add(Card.EXIT);
+        getCardsByPoint(EXIT).add(Card.EXIT);
+//        board.get(EXIT.x).get(EXIT.y).add(Card.EXIT);
 
         player = new Player(this, 1, EXIT, new Strategy());
         PLAYER = player.coordinates;
-        board.get(PLAYER.x).get(PLAYER.y).add(Card.PLAYER);
+        getCardsByPoint(PLAYER).add(Card.PLAYER);
+//        board.get(PLAYER.x).get(PLAYER.y).add(Card.PLAYER);
 
         Point BOOK = new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS));
-        board.get(BOOK.x).get(BOOK.y).add(Card.BOOK);
+        getCardsByPoint(BOOK).add(Card.BOOK);
+//        board.get(BOOK.x).get(BOOK.y).add(Card.BOOK);
 
         addCat(new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS)), 2);
+
+        addCat(new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS)), 3);
 
         status = Status.STARTED;
     }
@@ -46,7 +48,9 @@ public class Game {
         board.get(CAT.x).get(CAT.y).add(Card.CAT);
         for (int i = -perception + 1; i < perception; i++)
             for (int j = -perception + 1; j < perception; j++) {
-                board.get(CAT.x + i).get(CAT.y + j).add(Card.SEEN);
+                Point SEEN = Point.add(CAT, new Point(i, j));
+                if (ok(SEEN))
+                    getCardsByPoint(SEEN).add(Card.SEEN);
             }
     }
 
@@ -55,7 +59,6 @@ public class Game {
         return status + " in " + player.timer + " moves";
     }
 
-    //
     public List<Card> getCardsByPoint(Point p) {
         return board.get(p.x).get(p.y);
     }
@@ -71,7 +74,7 @@ public class Game {
             status = Status.LOST;
             return;
         }
-        List<Card> have = board.get(PLAYER.x).get(PLAYER.y);
+        List<Card> have = getCardsByPoint(PLAYER);
         if (have.contains(Card.CAT) || have.contains(Card.SEEN)) {
             status = Status.LOST;
             return;
@@ -86,8 +89,9 @@ public class Game {
     public void movePlayer(Point move) {
         if (status == Status.LOST)
             return;
-        player.coordinates.add(move);
-        history[player.coordinates.x][player.coordinates.y] = ++player.timer;
+        PLAYER.add(move);
+//        getCardsByPoint(PLAYER).add(player.timer);
+        history[PLAYER.x][PLAYER.y] = ++player.timer;
         updateStatus();
     }
 
