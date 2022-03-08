@@ -14,25 +14,33 @@ public class Game {
     Game(int seed) {
         random = new Random(seed);
 
-        player = new Player(this, 1, new Strategy());
-        board.put(Card.PLAYER, player.coordinates);
-
         Point EXIT = new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS));
         board.put(Card.EXIT, EXIT);
+
+        player = new Player(this, 1, EXIT, new Strategy());
+        board.put(Card.PLAYER, player.coordinates);
 
         Point BOOK = new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS));
         board.put(Card.BOOK, BOOK);
 
-        Point CAT = new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS));
-        board.put(Card.CAT, CAT);
+        addCat(new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS)), 2);
 
         status = Status.STARTED;
+    }
+
+    void addCat(Point CAT, int perception) {
+        board.put(Card.CAT, CAT);
+        for (int i = -perception + 1; i < perception; i++)
+            for (int j = -perception + 1; j < perception; j++) {
+                System.out.println(i + " " + j);
+                board.put(Card.SEEN_BY_CAT, Point.add(CAT, new Point(i, j)));
+            }
     }
 
     public String run() {
         player.play();
 //        return status == Status.LOST ? -1 : player.timer;
-        return status  + " in " + player.timer + " moves";
+        return status + " in " + player.timer + " moves";
     }
 
 

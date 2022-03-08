@@ -2,5 +2,6 @@ public enum Card {
     PLAYER,
     EXIT,
     BOOK,
-    CAT
+    CAT,
+    SEEN_BY_CAT,
 }

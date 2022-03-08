@@ -9,8 +9,9 @@ public class Player {
     final Game game;
     final Strategy strategy;
     final static Point[] MOVES = new Point[9];
+    Point EXIT;
 
-    Player(Game game, int perception, Strategy strategy) {
+    Player(Game game, int perception, Point EXIT, Strategy strategy) {
         for (int x = -1, i = 0; x <= 1; x++)
             for (int y = -1; y <= 1; y++, i++)
                 MOVES[i] = new Point(x, y);
@@ -21,6 +22,7 @@ public class Player {
         this.perception = perception;
         this.strategy = strategy;
         this.strategy.player = this;
+        this.EXIT = EXIT;
     }
 
     public void useMove(Point move) {
