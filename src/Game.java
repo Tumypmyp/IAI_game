@@ -1,57 +1,65 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class Game {
     final static int ROWS = 9;
     final static int COLUMNS = 9;
 
-    final private Map<Card, Point> board = new HashMap<>();
+    final private List<List<List<Card>>> board = new ArrayList<>(ROWS);
+
+    //    final private Map<Point, List<Card>> board = new HashMap<>();
     final private int[][] history = new int[ROWS][COLUMNS];
     final private Random random;
 
     final private Player player;
+    final private Point PLAYER;
     public Status status;
 
     Game(int seed) {
+        for (int i = 0; i < ROWS; i++)
+            board.add(new ArrayList<>(COLUMNS));
+
+        for (int i = 0; i < ROWS; i++)
+            for (int j = 0; j < COLUMNS; j++)
+                board.get(i).add(new ArrayList<>());
+
         random = new Random(seed);
 
         Point EXIT = new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS));
-        board.put(Card.EXIT, EXIT);
+        board.get(EXIT.x).get(EXIT.y).add(Card.EXIT);
 
         player = new Player(this, 1, EXIT, new Strategy());
-        board.put(Card.PLAYER, player.coordinates);
+        PLAYER = player.coordinates;
+        board.get(PLAYER.x).get(PLAYER.y).add(Card.PLAYER);
 
         Point BOOK = new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS));
-        board.put(Card.BOOK, BOOK);
+        board.get(BOOK.x).get(BOOK.y).add(Card.BOOK);
 
         addCat(new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS)), 2);
 
         status = Status.STARTED;
     }
 
+
     void addCat(Point CAT, int perception) {
-        board.put(Card.CAT, CAT);
+        board.get(CAT.x).get(CAT.y).add(Card.CAT);
         for (int i = -perception + 1; i < perception; i++)
             for (int j = -perception + 1; j < perception; j++) {
-                System.out.println(i + " " + j);
-                board.put(Card.SEEN_BY_CAT, Point.add(CAT, new Point(i, j)));
+                board.get(CAT.x + i).get(CAT.y + j).add(Card.SEEN);
             }
     }
 
     public String run() {
         player.play();
-//        return status == Status.LOST ? -1 : player.timer;
         return status + " in " + player.timer + " moves";
     }
 
-
+    //
     public List<Card> getCardsByPoint(Point p) {
-        List<Card> result = new ArrayList<>();
-        for (Map.Entry<Card, Point> entry : board.entrySet()) {
-            if (p.equals(entry.getValue()))
-                result.add(entry.getKey());
-        }
-        return result;
+        return board.get(p.x).get(p.y);
     }
+
 
     public static boolean ok(Point point) {
         return 0 <= point.x && point.x < ROWS
@@ -59,18 +67,19 @@ public class Game {
     }
 
     private void updateStatus() {
-        if (!ok(player.coordinates)) {
+        if (!ok(PLAYER)) {
             status = Status.LOST;
             return;
         }
-        if (player.coordinates.equals(board.get(Card.CAT))) {
+        List<Card> have = board.get(PLAYER.x).get(PLAYER.y);
+        if (have.contains(Card.CAT) || have.contains(Card.SEEN)) {
             status = Status.LOST;
             return;
         }
-        if (player.coordinates.equals(board.get(Card.BOOK)))
+        if (have.contains(Card.BOOK))
             player.haveBook = true;
 
-        if (player.coordinates.equals(board.get(Card.EXIT)) && player.haveBook)
+        if (have.contains(Card.EXIT) && player.haveBook)
             status = Status.WON;
     }
 
@@ -86,7 +95,7 @@ public class Game {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {
-                result.append(getCardsByPoint(new Point(i, j)).toString());
+                result.append(board.get(i).get(j).toString());
             }
             result.append("\n");
         }

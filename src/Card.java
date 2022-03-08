@@ -3,5 +3,5 @@ public enum Card {
     EXIT,
     BOOK,
     CAT,
-    SEEN_BY_CAT,
+    SEEN,
 }
