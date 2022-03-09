@@ -1,5 +1,3 @@
-import java.util.Objects;
-
 public class Point {
     public int x, y;
 
@@ -11,6 +9,7 @@ public class Point {
     public static Point add(Point a, Point b) {
         return new Point(a.x + b.x, a.y + b.y);
     }
+
     public void add(Point a) {
         x += a.x;
         y += a.y;
