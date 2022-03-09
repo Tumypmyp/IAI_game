@@ -1,5 +1,6 @@
 public interface Strategy {
 
-    void run(boolean debug);
+    void play(boolean debug);
+
     void setPlayer(Player player);
 }

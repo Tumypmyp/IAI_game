@@ -5,7 +5,7 @@ public class Backtracking implements Strategy{
     }
 
     @Override
-    public void run(boolean debug) {
+    public void play(boolean debug) {
 
         if (debug)
             player.game.print();
@@ -31,12 +31,6 @@ public class Backtracking implements Strategy{
         this.player = player;
     }
 
-    public boolean ok(Point p) {
-        return 0 <= p.x && p.x < Game.ROWS && 0 <= p.y && p.y < Game.COLUMNS
-                && !player.getVisibleCardsByPoint(p).contains(Card.CAT)
-                && (!player.getVisibleCardsByPoint(p).contains(Card.SEEN) || player.haveCloak);
-    }
-
     public boolean dfsToCard(Card card, boolean[][] used) {
         if (player.getStatus() == Status.LOST)
             return false;
@@ -46,7 +40,7 @@ public class Backtracking implements Strategy{
 
         for (Point move : Player.MOVES) {
             Point next = Point.add(player.coordinates, move);
-            if (ok(next) && !used[next.x][next.y]) {
+            if (player.ok(next) && !used[next.x][next.y]) {
                 player.useMove(move);
                 if (dfsToCard(card, used))
                     return true;
