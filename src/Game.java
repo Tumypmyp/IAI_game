@@ -13,8 +13,22 @@ public class Game {
     final public Player player;
 
     final private Point PLAYER;
-    final private Point EXIT;
     public Status status;
+
+    Game (Point cat1, Point cat2, Point book, Point cloak, Point exit, Player player) {
+        this.random = null;
+        this.player = player;
+        player.game = this;
+        player.EXIT = exit;
+        PLAYER = player.coordinates;
+
+        getCardsByPoint(book).add(Card.BOOK);
+        getCardsByPoint(cloak).add(Card.CLOAK);
+        getCardsByPoint(cat1).add(Card.CAT);
+        getCardsByPoint(cat2).add(Card.CAT);
+
+//        validate()
+    }
 
     Game(int seed, Player player) {
         for (int i = 0; i < ROWS; i++) {
@@ -29,7 +43,7 @@ public class Game {
         addCat(3);
         addBook();
         addCloak();
-        EXIT = addExit();
+        Point EXIT = addExit();
 
         this.player = player;
         player.game = this;
