@@ -6,11 +6,11 @@ public class Game {
     final static int ROWS = 9;
     final static int COLUMNS = 9;
 
-    final private List<List<List<Card>>> board = new ArrayList<>(ROWS);
+    final private List<List<List<Card>>> board = new ArrayList<>();
     final private int[][] history = new int[ROWS][COLUMNS];
     final private Random random;
 
-    final private Player player;
+    final public Player player;
 
     final private Point PLAYER;
     final private Point EXIT;
@@ -18,7 +18,7 @@ public class Game {
 
     Game(int seed) {
         for (int i = 0; i < ROWS; i++) {
-            board.add(new ArrayList<>(COLUMNS));
+            board.add(new ArrayList<>());
             for (int j = 0; j < COLUMNS; j++)
                 board.get(i).add(new ArrayList<>());
         }
@@ -34,9 +34,9 @@ public class Game {
         player = new Player(this, 1, EXIT, new Strategy());
         PLAYER = player.coordinates;
         getCardsByPoint(PLAYER).add(Card.PLAYER);
-        updateStatus();
 
         status = Status.STARTED;
+        updateStatus();
     }
 
 
@@ -82,6 +82,9 @@ public class Game {
         return new Point(getRandomNumber(0, ROWS), getRandomNumber(0, COLUMNS));
     }
 
+    public int getRandomNumber(int min, int max) {
+        return random.nextInt(max - min) + min;
+    }
     public String run(boolean debug) {
         player.play(debug);
         return status + " in " + player.timer + " moves";
@@ -102,17 +105,16 @@ public class Game {
             status = Status.LOST;
             return;
         }
-        List<Card> have = getCardsByPoint(PLAYER);
-        if (have.contains(Card.CAT) || (have.contains(Card.SEEN) && !player.haveCloak)) {
+        List<Card> cards = getCardsByPoint(PLAYER);
+        if (cards.contains(Card.CAT) || (!player.haveCloak && cards.contains(Card.SEEN))) {
             status = Status.LOST;
             return;
         }
-        if (have.contains(Card.BOOK))
+        if (cards.contains(Card.BOOK))
             player.haveBook = true;
-        if (have.contains(Card.CLOAK))
+        if (cards.contains(Card.CLOAK))
             player.haveCloak = true;
-
-        if (have.contains(Card.EXIT) && player.haveBook)
+        if (cards.contains(Card.EXIT) && player.haveBook)
             status = Status.WON;
     }
 
@@ -120,7 +122,6 @@ public class Game {
         if (status == Status.LOST)
             return;
         PLAYER.add(move);
-//        getCardsByPoint(PLAYER).add(player.timer);
         history[PLAYER.x][PLAYER.y] = ++player.timer;
         updateStatus();
     }
@@ -129,7 +130,7 @@ public class Game {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {
-                result.append(board.get(i).get(j).toString());
+                result.append(board.get(i).get(j));
             }
             result.append("\n");
         }
@@ -147,9 +148,6 @@ public class Game {
         return result.toString();
     }
 
-    public int getRandomNumber(int min, int max) {
-        return random.nextInt(max - min) + min;
-    }
 
     public void print() {
         System.out.print(getBoard());
