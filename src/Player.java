@@ -49,7 +49,7 @@ public class Player {
     public boolean ok(Point p) {
         return 0 <= p.x && p.x < Game.ROWS && 0 <= p.y && p.y < Game.COLUMNS
                 && !getVisibleCardsByPoint(p).contains(Card.CAT)
-                && (getVisibleCardsByPoint(p).contains(Card.SEEN) || haveCloak);
+                && (!getVisibleCardsByPoint(p).contains(Card.SEEN) || haveCloak);
     }
 
 }
