@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println(new Game(9994, new Backtracking()).run(true));
+        System.out.println(new Game(9994, new Player(1,  new Backtracking())).run(true));
 
         testStrategy(new Backtracking());
         testStrategy(new BacktrackingWithCloakState());
@@ -10,8 +10,8 @@ public class Main {
 
     static void testStrategy(Strategy strategy) {
         Map<Status, List<Integer>> statistic = new HashMap<>();
-        for (int i = 1; i < 1000000; i++) {
-            Game game = new Game(i, strategy);
+        for (int i = 1; i < 1000; i++) {
+            Game game = new Game(i, new Player(1,  strategy));
             game.run(false);
 //            System.out.println(i + ": " + game.run(false));
             if (statistic.get(game.status) == null)

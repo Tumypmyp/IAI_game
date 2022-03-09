@@ -16,7 +16,7 @@ public class Game {
     final private Point EXIT;
     public Status status;
 
-    Game(int seed, Strategy strategy) {
+    Game(int seed, Player player) {
         for (int i = 0; i < ROWS; i++) {
             board.add(new ArrayList<>());
             for (int j = 0; j < COLUMNS; j++)
@@ -31,8 +31,11 @@ public class Game {
         addCloak();
         EXIT = addExit();
 
-        player = new Player(this, 1, EXIT, strategy);
+        this.player = player;
+        player.game = this;
+        player.EXIT = EXIT;
         PLAYER = player.coordinates;
+
         getCardsByPoint(PLAYER).add(Card.PLAYER);
 
         status = Status.STARTED;
@@ -130,7 +133,7 @@ public class Game {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {
-                result.append(board.get(i).get(j));
+                result.append(board.get(i).get(j).toString());
             }
             result.append("\n");
         }

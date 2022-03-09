@@ -29,7 +29,6 @@ public class BacktrackingWithCloakState implements Strategy {
     }
 
 
-
     public boolean dfsToCard(Card card, boolean[][][] used) {
         if (player.getStatus() == Status.LOST)
             return false;
