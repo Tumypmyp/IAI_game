@@ -2,10 +2,10 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println(new Game(9994).run(true));
+        System.out.println(new Game(9994, new Backtracking()).run(true));
         Map<Status, List<Integer>> statistic = new HashMap<>();
         for (int i = 1; i < 100; i++) {
-            Game game = new Game(i);
+            Game game = new Game(i, new Backtracking());
             System.out.println(i + ": " + game.run(false));
             if (statistic.get(game.status) == null)
                 statistic.put(game.status, new ArrayList<>());

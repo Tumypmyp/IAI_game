@@ -16,7 +16,7 @@ public class Game {
     final private Point EXIT;
     public Status status;
 
-    Game(int seed) {
+    Game(int seed, Strategy strategy) {
         for (int i = 0; i < ROWS; i++) {
             board.add(new ArrayList<>());
             for (int j = 0; j < COLUMNS; j++)
@@ -31,7 +31,7 @@ public class Game {
         addCloak();
         EXIT = addExit();
 
-        player = new Player(this, 1, EXIT, new Strategy());
+        player = new Player(this, 1, EXIT, strategy);
         PLAYER = player.coordinates;
         getCardsByPoint(PLAYER).add(Card.PLAYER);
 

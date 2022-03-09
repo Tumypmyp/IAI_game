@@ -22,7 +22,7 @@ public class Player {
         this.game = game;
         this.perception = perception;
         this.strategy = strategy;
-        this.strategy.player = this;
+        this.strategy.setPlayer(this);
         this.EXIT = EXIT;
     }
 
@@ -36,23 +36,7 @@ public class Player {
 
 
     public void play(boolean debug) {
-        if (debug)
-            game.print();
-
-        boolean ok = strategy.dfsToCard(Card.BOOK, new boolean[Game.ROWS][Game.COLUMNS]);
-
-        if (debug)
-            game.print();
-
-        if (!ok && haveCloak)
-            ok = strategy.dfsToCard(Card.BOOK, new boolean[Game.ROWS][Game.COLUMNS]);
-
-        if (ok) {
-            ok = strategy.dfsToCard(Card.EXIT, new boolean[Game.ROWS][Game.COLUMNS]);
-            if (!ok && haveCloak) strategy.dfsToCard(Card.EXIT, new boolean[Game.ROWS][Game.COLUMNS]);
-        }
-        if (debug)
-            game.print();
+        strategy.run(debug);
     }
 
     public List<Card> getVisibleCardsByPoint(Point p) {
