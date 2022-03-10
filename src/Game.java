@@ -12,12 +12,18 @@ public class Game {
 
     final public Player player;
 
-    final private Point PLAYER;
+    private Point PLAYER;
+    private Point BOOK;
+    private Point EXIT;
+    private Point CLOAK;
     public Status status;
 
-    Game (Point cat1, Point cat2, Point book, Point cloak, Point exit, Player player) {
+    Game (Point cat1, Point cat2, Point book, Point cloak, Point exit, Player player) throws Exception {
         this.random = null;
         this.player = player;
+        this.BOOK = book;
+        this.EXIT = exit;
+        this.CLOAK = cloak;
         player.game = this;
         player.EXIT = exit;
         PLAYER = player.coordinates;
@@ -27,24 +33,41 @@ public class Game {
         getCardsByPoint(cat1).add(Card.CAT);
         getCardsByPoint(cat2).add(Card.CAT);
 
-//        validate()
+        if (!validate())
+            throw new Exception("bad input parameters");
     }
 
-    Game(int seed, Player player) {
-        for (int i = 0; i < ROWS; i++) {
-            board.add(new ArrayList<>());
-            for (int j = 0; j < COLUMNS; j++)
-                board.get(i).add(new ArrayList<>());
-        }
+    boolean validate(){
+        if (getCardsByPoint(EXIT).contains(Card.SEEN)
+            || getCardsByPoint(EXIT).contains(Card.BOOK))
+            return false;
+        if (getCardsByPoint(BOOK).contains(Card.SEEN))
+            return false;
+        if (getCardsByPoint(CLOAK).contains(Card.SEEN))
+            return false;
+        return true;
+    }
 
+
+    Game(int seed, Player player) {
         random = new Random(seed);
 
-        addCat(2);
-        addCat(3);
-        addBook();
-        addCloak();
-        Point EXIT = addExit();
+        while (true) {
+            board.clear();
+            for (int i = 0; i < ROWS; i++) {
+                board.add(new ArrayList<>());
+                for (int j = 0; j < COLUMNS; j++)
+                    board.get(i).add(new ArrayList<>());
+            }
 
+            addCat(2);
+            addCat(3);
+            addBook();
+            addCloak();
+            addExit();
+            if (validate())
+                break;
+        }
         this.player = player;
         player.game = this;
         player.EXIT = EXIT;
@@ -54,6 +77,9 @@ public class Game {
 
         status = Status.STARTED;
         updateStatus();
+        if (!validate()) {
+            System.out.println("????");
+        }
     }
 
 
@@ -63,35 +89,35 @@ public class Game {
         for (int i = -perception + 1; i < perception; i++)
             for (int j = -perception + 1; j < perception; j++) {
                 Point SEEN = Point.add(CAT, new Point(i, j));
-                if (ok(SEEN))
+                if (inside(SEEN))
                     getCardsByPoint(SEEN).add(Card.SEEN);
             }
     }
 
+
     void addBook() {
         // {0, 0}?
-        Point BOOK = makeRandomPoint();
-        while (getCardsByPoint(BOOK).contains(Card.SEEN)) {
-            BOOK = makeRandomPoint();
-        }
+        BOOK = makeRandomPoint();
+//        while (getCardsByPoint(BOOK).contains(Card.SEEN)) {
+//            BOOK = makeRandomPoint();
+//        }
         getCardsByPoint(BOOK).add(Card.BOOK);
     }
 
-    Point addExit() {
-        Point EXIT = makeRandomPoint();
-        while (getCardsByPoint(EXIT).contains(Card.CAT) || getCardsByPoint(EXIT).contains(Card.BOOK)) {
-            EXIT = makeRandomPoint();
-        }
+    void addExit() {
+        EXIT = makeRandomPoint();
+//        while (getCardsByPoint(EXIT).contains(Card.SEEN) || getCardsByPoint(EXIT).contains(Card.BOOK)) {
+//            EXIT = makeRandomPoint();
+//        }
         getCardsByPoint(EXIT).add(Card.EXIT);
-        return EXIT;
     }
 
     void addCloak() {
         // {0, 0}?
-        Point CLOAK = makeRandomPoint();
-        while (getCardsByPoint(CLOAK).contains(Card.SEEN)) {
-            CLOAK = makeRandomPoint();
-        }
+        CLOAK = makeRandomPoint();
+//        while (getCardsByPoint(CLOAK).contains(Card.SEEN)) {
+//            CLOAK = makeRandomPoint();
+//        }
         getCardsByPoint(CLOAK).add(Card.CLOAK);
     }
 
@@ -112,13 +138,13 @@ public class Game {
     }
 
 
-    public static boolean ok(Point point) {
+    public static boolean inside(Point point) {
         return 0 <= point.x && point.x < ROWS
                 && 0 <= point.y && point.y < COLUMNS;
     }
 
     private void updateStatus() {
-        if (!ok(PLAYER)) {
+        if (!inside(PLAYER)) {
             status = Status.LOST;
             return;
         }
