@@ -1,52 +1,61 @@
-public class Backtracking implements Strategy{
+public class Backtracking implements Strategy {
     Player player;
+    Game game;
 
-    Backtracking() {
+    final private Player[][] history = new Player[Game.ROWS][Game.COLUMNS];
+
+    Backtracking(Game game) {
+        this.game = game;
+        this.player = game.player;
     }
 
-    @Override
-    public void play(boolean debug) {
+    public Player run() {
+        System.out.println(game.getBoard());
+        Player bookPlayer = dfsToCard(Card.BOOK, player, new boolean[Game.ROWS][Game.COLUMNS]);
+        System.out.println(getHistory());
 
-        if (debug)
-            player.game.print();
-
-        boolean ok = dfsToCard(Card.BOOK, new boolean[Game.ROWS][Game.COLUMNS]);
-
-        if (debug)
-            player.game.print();
-
-        if (!ok && player.haveCloak)
-            ok = dfsToCard(Card.BOOK, new boolean[Game.ROWS][Game.COLUMNS]);
-
-        if (ok) {
-            ok = dfsToCard(Card.EXIT, new boolean[Game.ROWS][Game.COLUMNS]);
-            if (!ok && player.haveCloak) dfsToCard(Card.EXIT, new boolean[Game.ROWS][Game.COLUMNS]);
+        if (bookPlayer != null) {
+            System.out.println(bookPlayer);
+            Player exitPlayer = dfsToCard(Card.EXIT, bookPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
+            System.out.println(getHistory());
+            System.out.println(exitPlayer);
+            if (exitPlayer == null)
+                return player;
+            return exitPlayer;
         }
-        if (debug)
-            player.game.print();
+        return player;
     }
 
-    @Override
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
 
-    public boolean dfsToCard(Card card, boolean[][] used) {
-        if (player.getStatus() == Status.LOST)
-            return false;
-        if (player.getVisibleCardsByPoint(player.coordinates).contains(card))
-            return true;
-        used[player.coordinates.x][player.coordinates.y] = true;
+    public Player dfsToCard(Card card, Player p, boolean[][] used) {
+        if (p.status == Status.LOST)
+            return null;
+        history[p.coordinates.x][p.coordinates.y] = p;
+        used[p.coordinates.x][p.coordinates.y] = true;
+        if (p.getVisibleCardsByPoint(p.coordinates).contains(card)) {
+            return p;
+        }
 
         for (Point move : Player.MOVES) {
-            Point next = Point.add(player.coordinates, move);
-            if (player.ok(next) && !used[next.x][next.y]) {
-                player.useMove(move);
-                if (dfsToCard(card, used))
-                    return true;
-                player.useMove(Point.not(move));
+            Point next = Point.add(p.coordinates, move);
+            if (p.ok(next) && !used[next.x][next.y]) {
+                Player p2 = dfsToCard(card, game.movePlayer(p, move), used);
+                if (p2 != null)
+                    return p2;
             }
         }
-        return false;
+        return null;
+    }
+
+    public String getHistory() {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < Game.ROWS; i++) {
+            for (int j = 0; j < Game.COLUMNS; j++) {
+                Player p = history[i][j];
+                result.append(p == null ? "-1" : p.timer).append("\t");
+            }
+            result.append("\n");
+        }
+        return result.toString();
     }
 }

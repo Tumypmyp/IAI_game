@@ -3,17 +3,15 @@ import java.util.List;
 
 public class Player {
     int timer;
-    boolean haveBook = false;
-    boolean haveCloak = false;
+    boolean haveBook;
+    boolean haveCloak;
     final Point coordinates;
-    final private int perception;
-
-    Game game;
-    final Strategy strategy;
+    final int perception;
     final static List<Point> MOVES = new ArrayList<>();
-    Point EXIT;
+    Game game;
+    Status status;
 
-    Player(int perception, Strategy strategy) {
+    Player(Game game, int perception) {
         for (int x = -1, i = 0; x <= 1; x++)
             for (int y = -1; y <= 1; y++, i++)
                 MOVES.add(new Point(x, y));
@@ -21,20 +19,21 @@ public class Player {
         coordinates = new Point(0, 0);
         timer = 0;
         this.perception = perception;
-        this.strategy = strategy;
-        this.strategy.setPlayer(this);
+        this.game = game;
+        status = Status.STARTED;
+        haveBook = false;
+        haveCloak = false;
     }
 
-    public void useMove(Point move) {
-        game.movePlayer(move);
-    }
-
-    public Status getStatus() {
-        return game.status;
-    }
-
-    public void play(boolean debug) {
-        strategy.play(debug);
+    Player(Game game, Player p, Point move) {
+        this.coordinates = Point.add(p.coordinates, move);
+        this.timer = p.timer + 1;
+        this.perception = p.perception;
+        this.haveBook = p.haveBook;
+        this.haveCloak = p.haveCloak;
+        this.status = p.status;
+        this.game = game;
+        game.updateStatus(this);
     }
 
     public List<Card> getVisibleCardsByPoint(Point p) {
@@ -48,6 +47,10 @@ public class Player {
         return 0 <= p.x && p.x < Game.ROWS && 0 <= p.y && p.y < Game.COLUMNS
                 && !getVisibleCardsByPoint(p).contains(Card.CAT)
                 && (!getVisibleCardsByPoint(p).contains(Card.SEEN) || haveCloak);
+    }
+
+    public String toString() {
+        return coordinates + " " + status + " time:" +  timer + " book:" + haveBook + " cloak:" + haveCloak;
     }
 
 }
