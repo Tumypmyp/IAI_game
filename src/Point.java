@@ -18,4 +18,9 @@ public class Point {
     public static Point not(Point a) {
         return new Point(-a.x, -a.y);
     }
+
+
+    public String toString() {
+        return "[" + x + ", " + y + "]";
+    }
 }
