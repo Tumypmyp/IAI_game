@@ -20,9 +20,10 @@ public class Player {
         timer = 0;
         this.perception = perception;
         this.game = game;
-        status = Status.STARTED;
         haveBook = false;
         haveCloak = false;
+        status = Status.STARTED;
+        game.updateStatus(this);
     }
 
     Player(Game game, Player p, Point move) {

@@ -1,5 +1,5 @@
 public interface Strategy {
 
-    Player run();
+    Player run(boolean debug);
 
 }

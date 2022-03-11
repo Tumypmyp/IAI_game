@@ -2,20 +2,17 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        new Backtracking(new Game(3, 1)).run();
-//        System.out.println(new Game(711, new Player(1,  new Backtracking())).run(true));
-
+//        new Backtracking(new Game(813, 1)).run(true);
         test();
-//        testStrategy(new BacktrackingWithCloakState());
     }
 
     static void test() {
         Map<Status, List<Integer>> statistic = new HashMap<>();
-        for (int i = 1; i < 1000; i++) {
+        for (int i = 1; i < 10000; i++) {
             Strategy strategy = new Backtracking(new Game(i, 1));
 
-            Player p = strategy.run();
-            System.out.println(i + ": " + p.timer);
+            Player p = strategy.run(false);
+//            System.out.println(i + ": " + p);
             if (statistic.get(p.status) == null)
                 statistic.put(p.status, new ArrayList<>());
             statistic.get(p.status).add(p.timer);

@@ -9,16 +9,18 @@ public class Backtracking implements Strategy {
         this.player = game.player;
     }
 
-    public Player run() {
-        System.out.println(game.getBoard());
+    public Player run(boolean debug) {
+        if (debug)
+            System.out.println(game.getBoard());
         Player bookPlayer = dfsToCard(Card.BOOK, player, new boolean[Game.ROWS][Game.COLUMNS]);
-        System.out.println(getHistory());
+        if (debug)
+            System.out.println(getHistory());
 
         if (bookPlayer != null) {
-            System.out.println(bookPlayer);
+            if (debug) System.out.println(bookPlayer);
             Player exitPlayer = dfsToCard(Card.EXIT, bookPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
-            System.out.println(getHistory());
-            System.out.println(exitPlayer);
+            if (debug)System.out.println(getHistory());
+            if (debug) System.out.println(exitPlayer);
             if (exitPlayer == null)
                 return player;
             return exitPlayer;
