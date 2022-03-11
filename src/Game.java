@@ -9,7 +9,7 @@ public class Game {
     final private List<List<List<Card>>> board = new ArrayList<>();
     final private Random random;
 
-    final public Player player;
+    final public Player initialPlayer;
 
     private Point BOOK;
     private Point EXIT;
@@ -66,7 +66,7 @@ public class Game {
                 break;
         }
 
-        this.player = new Player(this, perception);
+        this.initialPlayer = new Player(this, perception);
     }
 
 

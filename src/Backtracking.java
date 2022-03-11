@@ -1,31 +1,36 @@
 public class Backtracking implements Strategy {
-    Player player;
     Game game;
 
     final private Player[][] history = new Player[Game.ROWS][Game.COLUMNS];
 
-    Backtracking(Game game) {
-        this.game = game;
-        this.player = game.player;
+    Backtracking() {
     }
 
+    @Override
+    public Strategy setGame(Game game) {
+        this.game = game;
+        return this;
+    }
+
+    @Override
     public Player run(boolean debug) {
-        if (debug)
-            System.out.println(game.getBoard());
-        Player bookPlayer = dfsToCard(Card.BOOK, player, new boolean[Game.ROWS][Game.COLUMNS]);
-        if (debug)
-            System.out.println(getHistory());
+        Player bookPlayer = dfsToCard(Card.BOOK, game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
+
+        if (debug) System.out.println(game.getBoard());
+        if (debug) System.out.println(getHistory());
 
         if (bookPlayer != null) {
             if (debug) System.out.println(bookPlayer);
+
             Player exitPlayer = dfsToCard(Card.EXIT, bookPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
-            if (debug)System.out.println(getHistory());
+
+            if (debug) System.out.println(getHistory());
             if (debug) System.out.println(exitPlayer);
             if (exitPlayer == null)
-                return player;
+                return game.initialPlayer;
             return exitPlayer;
         }
-        return player;
+        return game.initialPlayer;
     }
 
 

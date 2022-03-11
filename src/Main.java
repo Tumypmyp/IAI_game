@@ -2,14 +2,14 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-//        new Backtracking(new Game(813, 1)).run(true);
-        test();
+        new Backtracking().setGame(new Game(23, 1)).run(true);
+//        test();
     }
 
     static void test() {
         Map<Status, List<Integer>> statistic = new HashMap<>();
         for (int i = 1; i < 10000; i++) {
-            Strategy strategy = new Backtracking(new Game(i, 1));
+            Strategy strategy = new Backtracking().setGame(new Game(i, 1));
 
             Player p = strategy.run(false);
 //            System.out.println(i + ": " + p);
