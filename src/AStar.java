@@ -10,7 +10,8 @@ public class AStar implements Strategy{
     public Player run(boolean debug) {
 
 
-        Player p = findWayToPoint(game.EXIT, game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
+//        Player p = findWayToPoint(game.EXIT, game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
+        Player p = findWayToPoint(new Point (0, 7), game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
 
         if (debug) System.out.println(game.getBoard());
         if (debug) System.out.println(getHistory());
@@ -19,8 +20,10 @@ public class AStar implements Strategy{
     }
 
     Player findWayToPoint(Point finish, Player player, boolean[][] used) {
-        Queue<Move> q = new PriorityQueue<>(7, idComparator);
+        Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getDistanceTo(finish));
+        Queue<Move> q = new PriorityQueue<>(1, byDistance);
         q.add(new Move(player, new Point(0, 0)));
+
         while(!q.isEmpty()) {
             Move current = q.poll();
             Player p = current.execute();
@@ -41,6 +44,8 @@ public class AStar implements Strategy{
         }
         return game.initialPlayer;
     }
+//    public Comparator<Move> byDistance =
+//            (Move m1, Move m2) -> Integer.compare(m1.getDistanceTo(game.EXIT), m2.getDistanceTo(game.EXIT));
 
     public static Comparator<Move> idComparator = new Comparator<Move>(){
 
