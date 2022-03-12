@@ -12,7 +12,7 @@ public class Game {
     final public Player initialPlayer;
 
     private Point BOOK;
-    private Point EXIT;
+    public Point EXIT;
     private Point CLOAK;
 
 //    Game (Point cat1, Point cat2, Point book, Point cloak, Point exit, Player player) throws Exception {

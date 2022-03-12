@@ -45,13 +45,12 @@ public class Player {
     }
 
     public boolean ok(Point p) {
-        return 0 <= p.x && p.x < Game.ROWS && 0 <= p.y && p.y < Game.COLUMNS
-                && !getVisibleCardsByPoint(p).contains(Card.CAT)
+        return Game.inside(p) && !getVisibleCardsByPoint(p).contains(Card.CAT)
                 && (!getVisibleCardsByPoint(p).contains(Card.SEEN) || haveCloak);
     }
 
     public String toString() {
-        return coordinates + " " + status + " time:" +  timer + " book:" + haveBook + " cloak:" + haveCloak;
+        return coordinates + " " + status + " time:" + timer + " book:" + haveBook + " cloak:" + haveCloak;
     }
 
 }
