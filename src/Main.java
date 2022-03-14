@@ -2,9 +2,27 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        new Backtracking().setGame(new Game(23, 1)).run(true);
-        new AStar().setGame(new Game(23, 1)).run(true);
+//        new Backtracking().setGame(new Game(10, 1)).run(true);
+//        new AStar().setGame(new Game(10, 1)).run(true);
 //        test();
+        consoleTest();
+    }
+    static void consoleTest() {
+        Scanner scan = new Scanner(System.in);
+        String[] tokens = scan.nextLine().replaceAll("[^],0-8]", "").split("]");
+        Point[] points = new Point[6];
+        for (int i = 0; i < points.length; i++) {
+            String[] idx = tokens[i].split(",");
+            points[i] = new Point(Integer.parseInt(idx[0]), Integer.parseInt(idx[1]));
+            System.out.println(points[i]);
+        }
+        int perception = scan.nextInt();
+        try {
+            Game game = new Game(points, perception);
+            new Backtracking().setGame(game).run(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     static void test() {

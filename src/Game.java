@@ -15,26 +15,36 @@ public class Game {
     public Point EXIT;
     private Point CLOAK;
 
-//    Game (Point cat1, Point cat2, Point book, Point cloak, Point exit, Player player) throws Exception {
-//        this.random = null;
-////        this.player = player;
-//        this.BOOK = book;
-//        this.EXIT = exit;
-//        this.CLOAK = cloak;
-////        player.game = this;
-//        player.EXIT = exit;
-////        PLAYER = player.coordinates;
-//
-//        getCardsByPoint(book).add(Card.BOOK);
-//        getCardsByPoint(cloak).add(Card.CLOAK);
-//        getCardsByPoint(cat1).add(Card.CAT);
-//        getCardsByPoint(cat2).add(Card.CAT);
-//
-//        if (!validate())
-//            throw new Exception("bad input parameters");
-//    }
+    Game (Point[] points, int perception) throws Exception {
+        for (int i = 0; i < ROWS; i++) {
+            board.add(new ArrayList<>());
+            for (int j = 0; j < COLUMNS; j++)
+                board.get(i).add(new ArrayList<>());
+        }
+
+        this.random = null;
+        this.BOOK = points[3];
+        this.CLOAK = points[4];
+        this.EXIT = points[5];
+
+        getCardsByPoint(BOOK).add(Card.BOOK);
+        getCardsByPoint(CLOAK).add(Card.CLOAK);
+        getCardsByPoint(EXIT).add(Card.EXIT);
+
+        getCardsByPoint(points[1]).add(Card.CAT);
+        addCatPerception(points[1], 3);
+
+        getCardsByPoint(points[2]).add(Card.CAT);
+        addCatPerception(points[2], 2);
+
+        this.initialPlayer = new Player(this, perception);
+
+        if (!validate() || points[0].x != 0 || points[0].y != 0)
+            throw new Exception("bad input parameters");
+    }
 
     boolean validate() {
+        System.out.println(getBoard());
         if (getCardsByPoint(EXIT).contains(Card.SEEN)
                 || getCardsByPoint(EXIT).contains(Card.BOOK))
             return false;
@@ -57,8 +67,9 @@ public class Game {
                     board.get(i).add(new ArrayList<>());
             }
 
-            addCat(2);
-            addCat(3);
+            addCatPerception(addCard(Card.CAT), 2);
+            addCatPerception(addCard(Card.CAT), 3);
+
             BOOK = addCard(Card.BOOK);
             CLOAK = addCard(Card.CLOAK);
             EXIT = addCard(Card.EXIT);
@@ -70,8 +81,8 @@ public class Game {
     }
 
 
-    void addCat(int perception) {
-        Point CAT = addCard(Card.CAT);
+    void addCatPerception(Point CAT, int perception) {
+//        Point CAT = addCard(Card.CAT);
         for (int i = -perception + 1; i < perception; i++)
             for (int j = -perception + 1; j < perception; j++) {
                 Point SEEN = Point.add(CAT, new Point(i, j));
