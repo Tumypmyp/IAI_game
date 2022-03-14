@@ -44,17 +44,6 @@ public class AStar implements Strategy{
         }
         return game.initialPlayer;
     }
-//    public Comparator<Move> byDistance =
-//            (Move m1, Move m2) -> Integer.compare(m1.getDistanceTo(game.EXIT), m2.getDistanceTo(game.EXIT));
-
-    public static Comparator<Move> idComparator = new Comparator<Move>(){
-
-        @Override
-        public int compare(Move m1, Move m2) {
-            Point diff = Point.add(m1.coordinates, Point.not(m2.coordinates));
-            return diff.x + diff.y;
-        }
-    };
 
     @Override
     public Strategy setGame(Game game) {

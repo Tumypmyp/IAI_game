@@ -30,9 +30,6 @@ public class Backtracking implements Strategy {
     }
 
     public Player run2(boolean debug) {
-
-//        Player player = dfsToCard(Card.EXIT, game.EXIT, game.initialPlayer);
-
         Player p = dfsToCard(Card.CLOAK, game.EXIT, game.initialPlayer);
         if (p == null) {
             return dfsToCard(Card.EXIT, game.EXIT, dfsToCard(Card.BOOK, BOOK, game.initialPlayer));
@@ -50,24 +47,6 @@ public class Backtracking implements Strategy {
             list.add(p3);
         list.sort(Comparator.comparingInt((Player p0) -> p0.timer));
         return list.get(0);
-//        if (BOOK != null) {
-//            Player p1 = dfsToCard(Card.BOOK, BOOK, game.initialPlayer);
-//            p1 = dfsToCard(Card.EXIT, game.EXIT, p1);
-//            return p1;
-//        }
-//        player = dfsToCard(Card.BOOK, new Point(8, 8), game.initialPlayer);
-//        if (BOOK != null) {
-//            Player p1 = dfsToCard(Card.BOOK, BOOK, game.initialPlayer);
-//            p1 = dfsToCard(Card.EXIT, game.EXIT, p1);
-//            return p1;
-//        }
-//        if (CLOAK != null) {
-//            Player p1 = dfsToCard(Card.CLOAK, player.coordinates, game.initialPlayer);
-//            p1 = dfsToCard(Card.BOOK, BOOK, p1);
-//            p1 = dfsToCard(Card.EXIT, game.EXIT, p1);
-//            return p1;
-//        }
-//        return game.initialPlayer;
     }
 
     public Player dfsToCard(Card card, Point destination, Player player) {

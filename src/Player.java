@@ -47,9 +47,11 @@ public class Player {
     public int getX() {
         return coordinates.x;
     }
+
     public int getY() {
         return coordinates.y;
     }
+
     public boolean ok(Point p) {
         return Game.inside(p) && !getVisibleCardsByPoint(p).contains(Card.CAT)
                 && (!getVisibleCardsByPoint(p).contains(Card.SEEN) || haveCloak);

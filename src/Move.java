@@ -17,9 +17,4 @@ public class Move {
         Point p = Point.add(Point.not(coordinates), point);
         return Math.abs(p.x) + Math.abs(p.y);
     }
-    int getRanking() {
-        Point p = Point.add(Point.not(coordinates), player.game.EXIT);
-        return p.x + p.y + (player.haveBook ? -100 : 0);
-    }
-
 }
