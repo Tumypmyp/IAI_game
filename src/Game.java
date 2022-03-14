@@ -39,12 +39,16 @@ public class Game {
 
         this.initialPlayer = new Player(this, perception);
 
-        if (!validate() || points[0].x != 0 || points[0].y != 0)
+        if (!valid() || points[0].x != 0 || points[0].y != 0)
             throw new Exception("bad input parameters");
     }
 
-    boolean validate() {
-        System.out.println(getBoard());
+    boolean valid() {
+        if (board.isEmpty() || EXIT == null || BOOK == null || CLOAK == null) {
+            return false;
+        }
+//        System.out.println(getBoard());
+
         if (getCardsByPoint(EXIT).contains(Card.SEEN)
                 || getCardsByPoint(EXIT).contains(Card.BOOK))
             return false;
@@ -59,7 +63,7 @@ public class Game {
     Game(int seed, int perception) {
         random = new Random(seed);
 
-        while (true) {
+        while (!valid()) {
             board.clear();
             for (int i = 0; i < ROWS; i++) {
                 board.add(new ArrayList<>());
@@ -73,8 +77,6 @@ public class Game {
             BOOK = addCard(Card.BOOK);
             CLOAK = addCard(Card.CLOAK);
             EXIT = addCard(Card.EXIT);
-            if (validate())
-                break;
         }
 
         this.initialPlayer = new Player(this, perception);
@@ -82,7 +84,6 @@ public class Game {
 
 
     void addCatPerception(Point CAT, int perception) {
-//        Point CAT = addCard(Card.CAT);
         for (int i = -perception + 1; i < perception; i++)
             for (int j = -perception + 1; j < perception; j++) {
                 Point SEEN = Point.add(CAT, new Point(i, j));

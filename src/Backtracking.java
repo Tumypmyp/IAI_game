@@ -1,6 +1,4 @@
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 public class Backtracking implements Strategy {
     Game game;
@@ -18,29 +16,63 @@ public class Backtracking implements Strategy {
         return this;
     }
 
+
     @Override
     public Player run(boolean debug) {
-
-        Player exitPlayer = dfsToCard(Card.EXIT, game.EXIT, game.initialPlayer);
-//        Player bookPlayer = dfsToCard(Card.BOOK, new Point(0, 0), , new boolean[Game.ROWS][Game.COLUMNS]);
-
+        if (debug) System.out.println(game.getBoard());
+        Player player = run2(debug);
+        if (player == null)
+            player = game.initialPlayer;
         if (debug) System.out.println(game.getBoard());
         if (debug) System.out.println(getHistory());
+        if (debug) System.out.println(player);
+        return player;
+    }
 
-//        if (bookPlayer != null) {
-//            if (debug) System.out.println(bookPlayer);
-//
-//
-//            if (debug) System.out.println(getHistory());
-//            if (debug) System.out.println(exitPlayer);
-//            if (exitPlayer == null)
-//                return game.initialPlayer;
-//            return exitPlayer;
+    public Player run2(boolean debug) {
+
+//        Player player = dfsToCard(Card.EXIT, game.EXIT, game.initialPlayer);
+
+        Player p = dfsToCard(Card.CLOAK, game.EXIT, game.initialPlayer);
+        if (p == null) {
+            return dfsToCard(Card.EXIT, game.EXIT, dfsToCard(Card.BOOK, BOOK, game.initialPlayer));
+        }
+        p = dfsToCard(Card.BOOK, new Point(0, 0), p);
+        Player p1 = dfsToCard(Card.EXIT, game.EXIT, dfsToCard(Card.BOOK, BOOK, game.initialPlayer));
+        Player p2 = dfsToCard(Card.EXIT, game.EXIT, dfsToCard(Card.CLOAK, CLOAK, dfsToCard(Card.BOOK, BOOK, game.initialPlayer)));
+        Player p3 = dfsToCard(Card.EXIT, game.EXIT, dfsToCard(Card.BOOK, BOOK, dfsToCard(Card.CLOAK, CLOAK, game.initialPlayer)));
+        List<Player> list = new ArrayList<>();
+        if (p1 != null)
+            list.add(p1);
+        if (p2 != null)
+            list.add(p2);
+        if (p3 != null)
+            list.add(p3);
+        list.sort(Comparator.comparingInt((Player p0) -> p0.timer));
+        return list.get(0);
+//        if (BOOK != null) {
+//            Player p1 = dfsToCard(Card.BOOK, BOOK, game.initialPlayer);
+//            p1 = dfsToCard(Card.EXIT, game.EXIT, p1);
+//            return p1;
 //        }
-        return game.initialPlayer;
+//        player = dfsToCard(Card.BOOK, new Point(8, 8), game.initialPlayer);
+//        if (BOOK != null) {
+//            Player p1 = dfsToCard(Card.BOOK, BOOK, game.initialPlayer);
+//            p1 = dfsToCard(Card.EXIT, game.EXIT, p1);
+//            return p1;
+//        }
+//        if (CLOAK != null) {
+//            Player p1 = dfsToCard(Card.CLOAK, player.coordinates, game.initialPlayer);
+//            p1 = dfsToCard(Card.BOOK, BOOK, p1);
+//            p1 = dfsToCard(Card.EXIT, game.EXIT, p1);
+//            return p1;
+//        }
+//        return game.initialPlayer;
     }
 
     public Player dfsToCard(Card card, Point destination, Player player) {
+        if (player == null || destination == null)
+            return null;
         Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getDistanceTo(destination));
         return dfsToCard(card, byDistance, player, new boolean[Game.ROWS][Game.COLUMNS]);
     }
@@ -49,8 +81,10 @@ public class Backtracking implements Strategy {
         if (player.status == Status.LOST)
             return null;
 
-        history[player.coordinates.x][player.coordinates.y] = player;
-        used[player.coordinates.x][player.coordinates.y] = true;
+//        Player last = history[player.getX()][player.getY()];
+//        if (last == null || last.timer > player.timer)
+        history[player.getX()][player.getY()] = player;
+        used[player.getX()][player.getY()] = true;
 
         if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.BOOK))
             BOOK = player.coordinates;
