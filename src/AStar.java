@@ -17,8 +17,6 @@ public class AStar implements Strategy {
     public Player run(boolean debug) {
         Player p = findWayToPoint(new Point(9, 9), game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
 
-        if (debug) System.out.println(game.getBoard());
-        if (debug) System.out.println(getHistory());
         findWayToPoint(new Point(9, 9), findWayToPoint(CLOAK, game.initialPlayer));
 
         List<Player> list = new ArrayList<>();
@@ -38,11 +36,13 @@ public class AStar implements Strategy {
         if (list.isEmpty())
             return game.initialPlayer;
         p = list.get(0);
-        if (debug) System.out.println(game.getBoard());
-        if (debug) System.out.println(getHistory());
-        if (debug) System.out.println(p);
-        if (debug) Game.showPath(p.getPath());
-
+        if (debug) {
+            System.out.println("A*:");
+            System.out.println(game.getBoard());
+            System.out.println(p);
+            System.out.println(p.getPath());
+            Game.showPath(p.getPath());
+        }
         return p;
     }
 

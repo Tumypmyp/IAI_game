@@ -25,10 +25,13 @@ public class Backtracking implements Strategy {
         if (player == null)
             player = game.initialPlayer;
 
-        if (debug) System.out.println(game.getBoard());
-        if (debug) System.out.println(getHistory());
-        if (debug) System.out.println(player);
-        if (debug) Game.showPath(player.getPath());
+        if (debug) {
+            System.out.println("Backtracking:");
+            System.out.println(game.getBoard());
+            System.out.println(player);
+            System.out.println(player.getPath());
+            Game.showPath(player.getPath());
+        }
         return player;
     }
 
@@ -105,7 +108,7 @@ public class Backtracking implements Strategy {
         }
         while (!q.isEmpty()) {
             Move move = q.poll();
-            if (!used[move.coordinates.x][move.coordinates.y]){
+            if (!used[move.coordinates.x][move.coordinates.y]) {
                 Player p2 = dfsToCard(card, cmp, move.execute(), used);
                 if (p2 != null)
                     return p2;

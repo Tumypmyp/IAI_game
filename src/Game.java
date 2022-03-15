@@ -199,7 +199,8 @@ public class Game {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {
-                result.append(board.get(i).get(j).toString());
+                String s = board.get(i).get(j).toString();
+                result.append(s == "[]" ? "[    ]" : s);
             }
             result.append("\n");
         }
