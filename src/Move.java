@@ -10,7 +10,7 @@ public class Move {
     }
 
     Player execute() {
-        return player.game.movePlayer(player, nextMove);
+        return new Player(player, nextMove);
     }
 
     public int getDistanceTo(Point point) {

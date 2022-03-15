@@ -7,18 +7,19 @@ public class AStar implements Strategy {
     Point BOOK;
     Point CLOAK;
 
+    /**
+     * Searches for game solution
+     *
+     * @param debug indicates if debug output should be shown
+     * @return the final solution as agent that won
+     */
     @Override
     public Player run(boolean debug) {
-
-        Player p = findWayToPoint(game.EXIT, game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
-        Player p1 = findWayToPoint(game.EXIT, game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
-//        Player p2 = findWayToPoint(new Point(0, 8), game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
-//        Player p3 = findWayToPoint(new Point(8, 0), game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
-        Player p4 = findWayToPoint(new Point(9, 9), game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
+        Player p = findWayToPoint(new Point(9, 9), game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
 
         if (debug) System.out.println(game.getBoard());
         if (debug) System.out.println(getHistory());
-        findWayToPoint(new Point(-1, -1), findWayToPoint(CLOAK, game.initialPlayer));
+        findWayToPoint(new Point(9, 9), findWayToPoint(CLOAK, game.initialPlayer));
 
         List<Player> list = new ArrayList<>();
         p = findWayToPoint(game.EXIT, findWayToPoint(BOOK, game.initialPlayer));
@@ -40,6 +41,7 @@ public class AStar implements Strategy {
         if (debug) System.out.println(game.getBoard());
         if (debug) System.out.println(getHistory());
         if (debug) System.out.println(p);
+        if (debug) Game.showPath(p.getPath());
 
         return p;
     }
@@ -50,17 +52,24 @@ public class AStar implements Strategy {
         return findWayToPoint(finish, player, new boolean[Game.ROWS][Game.COLUMNS]);
     }
 
-    Player findWayToPoint(Point finish, Player player, boolean[][] used) {
-        if (player.coordinates.equals(finish))
+    /**
+     * Uses A* algorithm to find the shortest path to destination
+     *
+     * @param destination the point we go to
+     * @param player      the initial agent
+     * @param used        what places where visited
+     * @return the agent that came to destination
+     */
+    Player findWayToPoint(Point destination, Player player, boolean[][] used) {
+        if (player.coordinates.equals(destination))
             return player;
         Comparator<Move> byDistance = Comparator.comparingInt((Move m)
-                -> m.getDistanceTo(finish) + m.player.timer);
+                -> m.getDistanceTo(destination) + m.player.timer);
         Queue<Move> q = new PriorityQueue<>(1, byDistance);
 
 
         used[player.getX()][player.getY()] = true;
 
-//        history[player.getX()][player.getY()];
         if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.BOOK))
             BOOK = player.coordinates;
         if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.CLOAK))
@@ -74,7 +83,7 @@ public class AStar implements Strategy {
                 history[m.coordinates.x][m.coordinates.y] = m;
             }
         }
-//        q.add(new Move(player, new Point(0, 0)));
+
 
         while (!q.isEmpty()) {
             Move current = q.poll();
@@ -85,23 +94,18 @@ public class AStar implements Strategy {
             if (p.getVisibleCardsByPoint(p.coordinates).contains(Card.CLOAK))
                 CLOAK = p.coordinates;
 
-            if (p.coordinates.equals(finish))
+            if (p.coordinates.equals(destination))
                 return p;
             for (Point move : Player.MOVES) {
                 Move m = new Move(p, move);
-//                Point next = Point.add(p.coordinates, move);
                 if (p.ok(m.coordinates) && !used[m.coordinates.x][m.coordinates.y]) {
                     used[m.coordinates.x][m.coordinates.y] = true;
                     q.add(m);
                     history[m.coordinates.x][m.coordinates.y] = m;
-//                    Player p2 = dfsToCard(card, game.movePlayer(p, move), used);
-//                    if (p2 != null)
-//                        return p2;
                 }
             }
         }
         return null;
-//        return game.initialPlayer;
     }
 
     @Override
