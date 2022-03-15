@@ -1,33 +1,90 @@
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
-public class AStar implements Strategy{
+public class AStar implements Strategy {
     Game game;
-    final private Player[][] history = new Player[Game.ROWS][Game.COLUMNS];
+    final private Move[][] history = new Move[Game.ROWS][Game.COLUMNS];
+
+    Point BOOK;
+    Point CLOAK;
 
     @Override
     public Player run(boolean debug) {
 
-
-//        Player p = findWayToPoint(game.EXIT, game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
-        Player p = findWayToPoint(new Point (0, 7), game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
+        Player p = findWayToPoint(game.EXIT, game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
+        Player p1 = findWayToPoint(game.EXIT, game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
+//        Player p2 = findWayToPoint(new Point(0, 8), game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
+//        Player p3 = findWayToPoint(new Point(8, 0), game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
+        Player p4 = findWayToPoint(new Point(9, 9), game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
 
         if (debug) System.out.println(game.getBoard());
         if (debug) System.out.println(getHistory());
+        findWayToPoint(new Point(-1, -1), findWayToPoint(CLOAK, game.initialPlayer));
+
+        List<Player> list = new ArrayList<>();
+        p = findWayToPoint(game.EXIT, findWayToPoint(BOOK, game.initialPlayer));
+        if (p != null) {
+            list.add(p);
+        }
+        p = findWayToPoint(game.EXIT, findWayToPoint(BOOK, findWayToPoint(CLOAK, game.initialPlayer)));
+        if (p != null) {
+            list.add(p);
+        }
+        p = findWayToPoint(game.EXIT, findWayToPoint(CLOAK, findWayToPoint(BOOK, game.initialPlayer)));
+        if (p != null) {
+            list.add(p);
+        }
+        list.sort(Comparator.comparingInt((Player p0) -> p0.timer));
+        if (list.isEmpty())
+            return game.initialPlayer;
+        p = list.get(0);
+        if (debug) System.out.println(game.getBoard());
+        if (debug) System.out.println(getHistory());
         if (debug) System.out.println(p);
+
         return p;
     }
 
-    Player findWayToPoint(Point finish, Player player, boolean[][] used) {
-        Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getDistanceTo(finish));
-        Queue<Move> q = new PriorityQueue<>(1, byDistance);
-        q.add(new Move(player, new Point(0, 0)));
+    Player findWayToPoint(Point finish, Player player) {
+        if (player == null || finish == null)
+            return null;
+        return findWayToPoint(finish, player, new boolean[Game.ROWS][Game.COLUMNS]);
+    }
 
-        while(!q.isEmpty()) {
+    Player findWayToPoint(Point finish, Player player, boolean[][] used) {
+        if (player.coordinates.equals(finish))
+            return player;
+        Comparator<Move> byDistance = Comparator.comparingInt((Move m)
+                -> m.getDistanceTo(finish) + m.player.timer);
+        Queue<Move> q = new PriorityQueue<>(1, byDistance);
+
+
+        used[player.getX()][player.getY()] = true;
+
+//        history[player.getX()][player.getY()];
+        if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.BOOK))
+            BOOK = player.coordinates;
+        if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.CLOAK))
+            CLOAK = player.coordinates;
+
+        for (Point move : Player.MOVES) {
+            Move m = new Move(player, move);
+            if (player.ok(m.coordinates) && !used[m.coordinates.x][m.coordinates.y]) {
+                used[m.coordinates.x][m.coordinates.y] = true;
+                q.add(m);
+                history[m.coordinates.x][m.coordinates.y] = m;
+            }
+        }
+//        q.add(new Move(player, new Point(0, 0)));
+
+        while (!q.isEmpty()) {
             Move current = q.poll();
             Player p = current.execute();
-            history[p.coordinates.x][p.coordinates.y] = p;
+            history[p.coordinates.x][p.coordinates.y] = current;
+            if (p.getVisibleCardsByPoint(p.coordinates).contains(Card.BOOK))
+                BOOK = p.coordinates;
+            if (p.getVisibleCardsByPoint(p.coordinates).contains(Card.CLOAK))
+                CLOAK = p.coordinates;
+
             if (p.coordinates.equals(finish))
                 return p;
             for (Point move : Player.MOVES) {
@@ -36,13 +93,15 @@ public class AStar implements Strategy{
                 if (p.ok(m.coordinates) && !used[m.coordinates.x][m.coordinates.y]) {
                     used[m.coordinates.x][m.coordinates.y] = true;
                     q.add(m);
+                    history[m.coordinates.x][m.coordinates.y] = m;
 //                    Player p2 = dfsToCard(card, game.movePlayer(p, move), used);
 //                    if (p2 != null)
 //                        return p2;
                 }
             }
         }
-        return game.initialPlayer;
+        return null;
+//        return game.initialPlayer;
     }
 
     @Override
@@ -56,8 +115,8 @@ public class AStar implements Strategy{
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < Game.ROWS; i++) {
             for (int j = 0; j < Game.COLUMNS; j++) {
-                Player p = history[i][j];
-                result.append(p == null ? "-1" : p.timer).append("\t");
+                Move m = history[i][j];
+                result.append(m == null ? "-1" : m.execute().timer).append("\t");
             }
             result.append("\n");
         }
