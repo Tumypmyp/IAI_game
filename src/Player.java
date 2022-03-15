@@ -1,13 +1,16 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Player {
-    int timer;
     boolean haveBook;
     boolean haveCloak;
+    final int timer;
     final Point coordinates;
     final int perception;
     final static List<Point> MOVES = new ArrayList<>();
+
+    Player parent;
     Game game;
     Status status;
 
@@ -34,6 +37,7 @@ public class Player {
         this.haveCloak = p.haveCloak;
         this.status = p.status;
         this.game = game;
+        this.parent = p;
         game.updateStatus(this);
     }
 
@@ -60,5 +64,17 @@ public class Player {
     public String toString() {
         return coordinates + " " + status + " time:" + timer + " book:" + haveBook + " cloak:" + haveCloak;
     }
+    public List<Point> getPath() {
+        List<Point> path = new ArrayList<>();
+        Player p = this;
+        path.add(p.coordinates);
+        while (p.parent != null) {
+            p = p.parent;
+            path.add(p.coordinates);
+        }
+        Collections.reverse(path);
+        return path;
+    }
+
 
 }

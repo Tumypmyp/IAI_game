@@ -148,6 +148,19 @@ public class Game {
         return result.toString();
     }
 
+    public static void showPath(List<Point> path) {
+        int[][] history = new int[Game.ROWS][Game.COLUMNS];
+        int timer = 1;
+        for (Point p : path) {
+            history[p.x][p.y] = timer++;
+        }
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLUMNS; j++)
+                System.out.print(history[i][j] == 0 ? ".\t" : history[i][j] + "\t");
+            System.out.println();
+        }
+
+    }
 
 }
 
