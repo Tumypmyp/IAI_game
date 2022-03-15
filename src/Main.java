@@ -38,15 +38,17 @@ public class Main {
         try {
             Game game = new Game(points, perception);
             strategy.setGame(game).run(true);
-//            new AStar().setGame(game).run(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     static void test(int n) {
-        Map<Status, List<Integer>> statistic1 = new HashMap<>();
+
         Map<Status, List<Integer>> statistic2 = new HashMap<>();
+        Map<Status, List<Integer>> statistic1 = new HashMap<>();
+        List<Integer> diff = new ArrayList<>();
+
         for (int i = 0; i < n; i++) {
             Strategy strategy1 = new Backtracking().setGame(new Game(i, 1));
             Strategy strategy2 = new AStar().setGame(new Game(i, 1));
@@ -61,6 +63,9 @@ public class Main {
 
             statistic2.computeIfAbsent(p2.status, k -> new ArrayList<>());
             statistic2.get(p2.status).add(p2.timer);
+
+            diff.add(p1.timer - p2.timer);
+
         }
 
         System.out.println("Backtracking:");
@@ -76,6 +81,8 @@ public class Main {
             double avg = average.isPresent() ? average.getAsDouble() : 0;
             System.out.println(entry.getKey() + ":" + avg + " " + entry.getValue().size());
         }
+//        for (int i = 0; i < diff.size(); i++)
+//            System.out.print(diff.get(i) + " ");
     }
 }
 
