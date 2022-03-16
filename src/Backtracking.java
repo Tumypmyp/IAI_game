@@ -37,14 +37,14 @@ public class Backtracking implements Strategy {
 
 
     public Player run2() {
-        Player p = dfsToCard(Card.CLOAK, game.EXIT);
-        if (p == null) {
-            return dfsToCard(Card.EXIT, game.EXIT, dfsToCard(Card.BOOK, BOOK));
+        Player p = dfsToPoint(new Point(9, 9));
+        if (CLOAK == null) {
+            return dfsToPoint(game.EXIT, dfsToPoint(BOOK));
         }
-        p = dfsToCard(Card.BOOK, game.EXIT, p);
-        Player p1 = dfsToCard(Card.EXIT, game.EXIT, dfsToCard(Card.BOOK, BOOK));
-        Player p2 = dfsToCard(Card.EXIT, game.EXIT, dfsToCard(Card.CLOAK, CLOAK, dfsToCard(Card.BOOK, BOOK)));
-        Player p3 = dfsToCard(Card.EXIT, game.EXIT, dfsToCard(Card.BOOK, BOOK, dfsToCard(Card.CLOAK, CLOAK)));
+        p = dfsToPoint(new Point(9, 9), dfsToPoint(CLOAK));
+        Player p1 = dfsToPoint(game.EXIT, dfsToPoint(BOOK));
+        Player p2 = dfsToPoint(game.EXIT, dfsToPoint(CLOAK, dfsToPoint(BOOK)));
+        Player p3 = dfsToPoint(game.EXIT, dfsToPoint(BOOK, dfsToPoint(CLOAK)));
         List<Player> list = new ArrayList<>();
         if (p1 != null)
             list.add(p1);
@@ -56,35 +56,33 @@ public class Backtracking implements Strategy {
         return list.get(0);
     }
 
-    public Player dfsToCard(Card card, Point destination) {
-        return dfsToCard(card, destination, game.initialPlayer);
+    public Player dfsToPoint(Point destination) {
+        return dfsToPoint(destination, game.initialPlayer);
     }
 
     /**
      * Searches for card in the direction of the destination
      *
-     * @param card        indicates what card type will stop the search
      * @param destination the assumed place of a card
      * @param player      the agent that will be moved
      * @return the agent that found the card
      */
-    public Player dfsToCard(Card card, Point destination, Player player) {
+    public Player dfsToPoint(Point destination, Player player) {
         if (player == null || destination == null)
             return null;
         Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getDistanceTo(destination));
-        return dfsToCard(card, byDistance, player, new boolean[Game.ROWS][Game.COLUMNS]);
+        return dfsToPoint(destination, byDistance, player, new boolean[Game.ROWS][Game.COLUMNS]);
     }
 
     /**
      * Searches for card going from player
      *
-     * @param card   indicates what card type will stop the search
      * @param cmp    comparator used for neighbourhood priorities
      * @param player the agent the algorithm working on
      * @param used   what places where visited
      * @return the agent that found the card
      */
-    public Player dfsToCard(Card card, Comparator<Move> cmp, Player player, boolean[][] used) {
+    public Player dfsToPoint(Point destination, Comparator<Move> cmp, Player player, boolean[][] used) {
         if (player.status == Status.LOST)
             return null;
 
@@ -96,9 +94,11 @@ public class Backtracking implements Strategy {
         if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.CLOAK))
             CLOAK = player.coordinates;
 
-        if (player.getVisibleCardsByPoint(player.coordinates).contains(card)) {
+        if (player.coordinates.equals(destination))
             return player;
-        }
+//        if (player.getVisibleCardsByPoint(player.coordinates).contains(card)) {
+//            return player;
+//        }
 
         Queue<Move> q = new PriorityQueue<>(1, cmp);
         for (Point p : Player.MOVES) {
@@ -109,7 +109,7 @@ public class Backtracking implements Strategy {
         while (!q.isEmpty()) {
             Move move = q.poll();
             if (!used[move.coordinates.x][move.coordinates.y]) {
-                Player p2 = dfsToCard(card, cmp, move.execute(), used);
+                Player p2 = dfsToPoint(destination, cmp, move.execute(), used);
                 if (p2 != null)
                     return p2;
             }
