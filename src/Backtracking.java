@@ -4,29 +4,14 @@ import java.util.Queue;
 
 public class Backtracking implements Strategy {
     Game game;
+    Search search;
     final private Player[][] history = new Player[Game.ROWS][Game.COLUMNS];
-    Point BOOK;
-    Point CLOAK;
 
-    public Backtracking(Game game) {
+
+    public Backtracking(Game game, Search search) {
         this.game = game;
+        this.search = search;
     }
-
-    @Override
-    public Game getGame() {
-        return game;
-    }
-
-    @Override
-    public Point getBOOK() {
-        return BOOK;
-    }
-
-    @Override
-    public Point getCLOAK() {
-        return CLOAK;
-    }
-
     /**
      * Searches for card in the direction of the destination
      *
@@ -57,15 +42,12 @@ public class Backtracking implements Strategy {
         used[player.getX()][player.getY()] = true;
 
         if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.BOOK))
-            BOOK = player.coordinates;
+            search.BOOK = player.coordinates;
         if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.CLOAK))
-            CLOAK = player.coordinates;
+            search.CLOAK = player.coordinates;
 
         if (player.coordinates.equals(destination))
             return player;
-//        if (player.getVisibleCardsByPoint(player.coordinates).contains(card)) {
-//            return player;
-//        }
 
         Queue<Move> q = new PriorityQueue<>(1, cmp);
         for (Point p : Player.MOVES) {
@@ -83,7 +65,6 @@ public class Backtracking implements Strategy {
         }
         return null;
     }
-
 
     public Player[][] getHistory() {
         return history;

@@ -4,29 +4,13 @@ import java.util.Queue;
 
 public class AStar implements Strategy {
     Game game;
+    Search search;
     final private Player[][] history = new Player[Game.ROWS][Game.COLUMNS];
-    Point BOOK;
-    Point CLOAK;
 
-    public AStar(Game game) {
+    public AStar(Game game, Search search) {
         this.game = game;
+        this.search = search;
     }
-
-    @Override
-    public Game getGame() {
-        return game;
-    }
-
-    @Override
-    public Point getBOOK() {
-        return BOOK;
-    }
-
-    @Override
-    public Point getCLOAK() {
-        return CLOAK;
-    }
-
 
     public Player findWayToPoint(Point destination, Player player) {
         if (player == null || destination == null)
@@ -53,9 +37,9 @@ public class AStar implements Strategy {
         used[player.getX()][player.getY()] = true;
 
         if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.BOOK))
-            BOOK = player.coordinates;
+            search.BOOK = player.coordinates;
         if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.CLOAK))
-            CLOAK = player.coordinates;
+            search.CLOAK = player.coordinates;
 
         for (Point move : Player.MOVES) {
             Move m = new Move(player, move);
@@ -71,9 +55,9 @@ public class AStar implements Strategy {
             Player p = current.execute();
             history[p.coordinates.x][p.coordinates.y] = current.player;
             if (p.getVisibleCardsByPoint(p.coordinates).contains(Card.BOOK))
-                BOOK = p.coordinates;
+                search.BOOK = p.coordinates;
             if (p.getVisibleCardsByPoint(p.coordinates).contains(Card.CLOAK))
-                CLOAK = p.coordinates;
+                search.CLOAK = p.coordinates;
 
             if (p.coordinates.equals(destination))
                 return p;

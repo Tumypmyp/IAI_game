@@ -6,14 +6,21 @@ public class Search {
     Strategy strategy;
     String name;
     final Player[][] history;
+    Game game;
+    Point BOOK;
+    Point CLOAK;
+    final Point EXIT;
 
     Search(Game game, String s) {
         name = s;
         if (s.toLowerCase().charAt(0) == 'a')
-            this.strategy = new AStar(game);
+            this.strategy = new AStar(game, this);
         else
-            this.strategy = new Backtracking(game);
+            this.strategy = new Backtracking(game, this);
+
+        this.game = game;
         this.history = strategy.getHistory();
+        this.EXIT = game.EXIT;
     }
 
     Player run(boolean debug) {
@@ -26,14 +33,14 @@ public class Search {
 //        }
 
 //        optimization
-//        if (strategy.getCLOAK() == null) {
-//            return strategy.findWayToPoint(game.EXIT, strategy.findWayToPoint(strategy.getBOOK()));
+//        if (CLOAK == null) {
+//            return findWayThrowPoints(BOOK, EXIT);
 //        }
-        strategy.findWayToPoint(new Point(9, 9), findWayToPoint(strategy.getCLOAK()));
-        Player p1 = strategy.findWayToPoint(strategy.getGame().EXIT, findWayToPoint(strategy.getBOOK()));
-        Player p2 = strategy.findWayToPoint(strategy.getGame().EXIT, strategy.findWayToPoint(strategy.getCLOAK(), findWayToPoint(strategy.getBOOK())));
-        Player p3 = strategy.findWayToPoint(strategy.getGame().EXIT, strategy.findWayToPoint(strategy.getBOOK(), findWayToPoint(strategy.getCLOAK())));
+        findWayThrowPoints(CLOAK, new Point(9, 9));
 
+        Player p1 = findWayThrowPoints(BOOK, EXIT);
+        Player p2 = findWayThrowPoints(BOOK, CLOAK, EXIT);
+        Player p3 = findWayThrowPoints(CLOAK, BOOK, EXIT);
 
         List<Player> list = new ArrayList<>();
         if (p1 != null)
@@ -45,12 +52,12 @@ public class Search {
         list.sort(Comparator.comparingInt((Player p0) -> p0.timer));
 
         if (list.isEmpty())
-            return strategy.getGame().initialPlayer;
+            return game.initialPlayer;
         player = list.get(0);
 
         if (debug) {
             System.out.println(name + ":");
-            System.out.println(strategy.getGame().getBoard());
+            System.out.println(game.getBoard());
             if (player != null) {
                 System.out.println(player);
                 System.out.println(player.getPath());
@@ -60,9 +67,19 @@ public class Search {
         return player;
     }
 
+    public Player findWayThrowPoints(Point... points) {
+        return findWayThrowPoints(game.initialPlayer, points);
+    }
 
-    public Player findWayToPoint(Point destination){
-        return strategy.findWayToPoint(destination, strategy.getGame().initialPlayer);
+    public Player findWayThrowPoints(Player player, Point... points) {
+        for (Point v : points) {
+            player = strategy.findWayToPoint(v, player);
+        }
+        return player;
+    }
+
+    public Player findWayToPoint(Point destination) {
+        return strategy.findWayToPoint(destination, game.initialPlayer);
     }
 
     public String getHistory() {
