@@ -22,7 +22,8 @@ public class Backtracking implements Strategy {
     public Player findWayToPoint(Player player, Point destination) {
         if (player == null || destination == null)
             return null;
-        Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getDistanceTo(destination));
+        Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getMinimalMoves(destination));
+//        Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getDistanceTo(destination));
         return findWayToPoint(player, destination, byDistance, new boolean[Game.ROWS][Game.COLUMNS]);
     }
 

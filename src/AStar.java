@@ -29,7 +29,8 @@ public class AStar implements Strategy {
         if (player.coordinates.equals(destination))
             return player;
         Comparator<Move> byDistance = Comparator.comparingInt((Move m)
-                -> m.getDistanceTo(destination) + m.player.timer);
+                -> m.getMinimalMoves(destination) + m.player.timer);
+//                -> m.getDistanceTo(destination) + m.player.timer);
         Queue<Move> q = new PriorityQueue<>(1, byDistance);
 
 

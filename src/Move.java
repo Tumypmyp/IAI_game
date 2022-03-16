@@ -17,4 +17,11 @@ public class Move {
         Point p = Point.add(Point.not(coordinates), point);
         return Math.abs(p.x) + Math.abs(p.y);
     }
+
+    public int getMinimalMoves(Point point) {
+        Point p = Point.add(Point.not(coordinates), point);
+        int x = Math.abs(p.x);
+        int y = Math.abs(p.y);
+        return Math.max(x, y);
+    }
 }

@@ -220,7 +220,7 @@ public class Game {
         }
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++)
-                System.out.print(history[i][j] == 0 ? ".\t" : history[i][j] + "\t");
+                System.out.print(history[i][j] == 0 ? ".\t" : history[i][j] - 1+ "\t");
             System.out.println();
         }
 
