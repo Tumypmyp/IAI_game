@@ -1,16 +1,28 @@
-import java.util.*;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class AStar implements Strategy {
     Game game;
     final private Player[][] history = new Player[Game.ROWS][Game.COLUMNS];
-
     Point BOOK;
     Point CLOAK;
 
+    public AStar(Game game) {
+        this.game = game;
+    }
+
+    @Override
+    public Game getGame() {
+        return game;
+    }
+
+    @Override
     public Point getBOOK() {
         return BOOK;
     }
 
+    @Override
     public Point getCLOAK() {
         return CLOAK;
     }
@@ -54,7 +66,6 @@ public class AStar implements Strategy {
             }
         }
 
-
         while (!q.isEmpty()) {
             Move current = q.poll();
             Player p = current.execute();
@@ -76,12 +87,6 @@ public class AStar implements Strategy {
             }
         }
         return null;
-    }
-
-    @Override
-    public Strategy setGame(Game game) {
-        this.game = game;
-        return this;
     }
 
     public Player[][] getHistory() {

@@ -1,6 +1,6 @@
 public interface Strategy {
-    Strategy setGame(Game game);
 
+    Game getGame();
     Point getBOOK();
 
     Point getCLOAK();

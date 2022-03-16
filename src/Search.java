@@ -5,28 +5,16 @@ import java.util.List;
 public class Search {
     Strategy strategy;
     String name;
-    Game game;
-//    Point BOOK;
-//    Point CLOAK;
     final Player[][] history;
 
-    Search(String s) {
+    Search(Game game, String s) {
         name = s;
         if (s.toLowerCase().charAt(0) == 'a')
-            this.strategy = new AStar();
+            this.strategy = new AStar(game);
         else
-            this.strategy = new Backtracking();
+            this.strategy = new Backtracking(game);
         this.history = strategy.getHistory();
-//        this.BOOK = strategy.getBOOK();
-//        this.CLOAK = strategy.getCLOAK();
     }
-
-    public Search setGame(Game game) {
-        this.game = game;
-        strategy.setGame(game);
-        return this;
-    }
-
 
     Player run(boolean debug) {
         Player player = findWayToPoint(new Point(9, 9));
@@ -42,9 +30,9 @@ public class Search {
 //            return strategy.findWayToPoint(game.EXIT, strategy.findWayToPoint(strategy.getBOOK()));
 //        }
         strategy.findWayToPoint(new Point(9, 9), findWayToPoint(strategy.getCLOAK()));
-        Player p1 = strategy.findWayToPoint(game.EXIT, findWayToPoint(strategy.getBOOK()));
-        Player p2 = strategy.findWayToPoint(game.EXIT, strategy.findWayToPoint(strategy.getCLOAK(), findWayToPoint(strategy.getBOOK())));
-        Player p3 = strategy.findWayToPoint(game.EXIT, strategy.findWayToPoint(strategy.getBOOK(), findWayToPoint(strategy.getCLOAK())));
+        Player p1 = strategy.findWayToPoint(strategy.getGame().EXIT, findWayToPoint(strategy.getBOOK()));
+        Player p2 = strategy.findWayToPoint(strategy.getGame().EXIT, strategy.findWayToPoint(strategy.getCLOAK(), findWayToPoint(strategy.getBOOK())));
+        Player p3 = strategy.findWayToPoint(strategy.getGame().EXIT, strategy.findWayToPoint(strategy.getBOOK(), findWayToPoint(strategy.getCLOAK())));
 
 
         List<Player> list = new ArrayList<>();
@@ -57,12 +45,12 @@ public class Search {
         list.sort(Comparator.comparingInt((Player p0) -> p0.timer));
 
         if (list.isEmpty())
-            return game.initialPlayer;
+            return strategy.getGame().initialPlayer;
         player = list.get(0);
 
         if (debug) {
             System.out.println(name + ":");
-            System.out.println(game.getBoard());
+            System.out.println(strategy.getGame().getBoard());
             if (player != null) {
                 System.out.println(player);
                 System.out.println(player.getPath());
@@ -74,7 +62,7 @@ public class Search {
 
 
     public Player findWayToPoint(Point destination){
-        return strategy.findWayToPoint(destination, game.initialPlayer);
+        return strategy.findWayToPoint(destination, strategy.getGame().initialPlayer);
     }
 
     public String getHistory() {

@@ -1,24 +1,30 @@
-import java.util.*;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class Backtracking implements Strategy {
     Game game;
     final private Player[][] history = new Player[Game.ROWS][Game.COLUMNS];
-
     Point BOOK;
     Point CLOAK;
 
+    public Backtracking(Game game) {
+        this.game = game;
+    }
+
+    @Override
+    public Game getGame() {
+        return game;
+    }
+
+    @Override
     public Point getBOOK() {
         return BOOK;
     }
 
+    @Override
     public Point getCLOAK() {
         return CLOAK;
-    }
-
-    @Override
-    public Strategy setGame(Game game) {
-        this.game = game;
-        return this;
     }
 
     /**

@@ -6,17 +6,15 @@ public class Main {
         runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, "Backtracking");
         runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, "A*");
 
-//        new Search("A*").setGame(new Game(0, 1)).run(true);
-//        new Search("Backtracking").setGame(new Game(10, 1)).run(true);
+        new Search(new Game(0, 1), "A*").run(true);
+        new Search(new Game(0, 1), "Backtracking").run(true);
 //        example of a random game
-//        new AStar().setGame(new Game(10, 1)).run(true);
-//        new Backtracking().setGame(new Game(3, 1)).run(true);
 
 //        to input console test
 //        consoleTest();
 
 //        run generated tests
-//        test(10);
+        test(10);
     }
 
     static void consoleTest() {
@@ -39,7 +37,7 @@ public class Main {
         }
         try {
             Game game = new Game(points, perception);
-            new Search(strategy).setGame(game).run(true);
+            new Search(game, strategy).run(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,8 +50,8 @@ public class Main {
         List<Integer> diff = new ArrayList<>();
 
         for (int i = 0; i < n; i++) {
-            Search search1 = new Search("backtracking").setGame(new Game(i, 1));
-            Search search2 = new Search("A*").setGame(new Game(i, 1));
+            Search search1 = new Search(new Game(i, 1), "backtracking");
+            Search search2 = new Search(new Game(i, 1), "A*");
 
             Player p1 = search1.run(false);
             Player p2 = search2.run(false);
