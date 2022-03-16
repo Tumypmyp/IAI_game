@@ -1,30 +1,31 @@
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class Search {
-    Strategy strategy;
-    String name;
-    final Player[][] history;
+    final private String name;
+    final private Strategy strategy;
+    final private Player[][] history = new Player[Game.ROWS][Game.COLUMNS];
     Game game;
     Point BOOK;
     Point CLOAK;
-    final Point EXIT;
+    Point EXIT;
 
-    Search(Game game, String s) {
-        name = s;
-        if (s.toLowerCase().charAt(0) == 'a')
-            this.strategy = new AStar(game, this);
-        else
-            this.strategy = new Backtracking(game, this);
+    Search(Game game, String name) {
+        if (name.toLowerCase().charAt(0) == 'a') {
+            this.strategy = new AStar(this, history);
+        } else {
+            this.strategy = new Backtracking(this, history);
+        }
 
+        this.name = name;
         this.game = game;
-        this.history = strategy.getHistory();
         this.EXIT = game.EXIT;
     }
 
     Player run(boolean debug) {
-        Player player = findWayToPoint(new Point(9, 9));
+        Player player = findWayThrowPoints(new Point(9, 9));
 
 //        if (debug) {
 //            System.out.println("Backtracking:");
@@ -38,19 +39,16 @@ public class Search {
 //        }
         findWayThrowPoints(CLOAK, new Point(9, 9));
 
-        Player p1 = findWayThrowPoints(BOOK, EXIT);
-        Player p2 = findWayThrowPoints(BOOK, CLOAK, EXIT);
-        Player p3 = findWayThrowPoints(CLOAK, BOOK, EXIT);
-
         List<Player> list = new ArrayList<>();
-        if (p1 != null)
-            list.add(p1);
-        if (p2 != null)
-            list.add(p2);
-        if (p3 != null)
-            list.add(p3);
-        list.sort(Comparator.comparingInt((Player p0) -> p0.timer));
 
+        list.add(findWayThrowPoints(BOOK, EXIT));
+        list.add(findWayThrowPoints(BOOK, CLOAK, EXIT));
+        list.add(findWayThrowPoints(CLOAK, BOOK, EXIT));
+
+        list.removeIf(Objects::isNull);
+        list.removeIf(p -> p.status != Status.WON);
+
+        list.sort(Comparator.comparingInt((Player p0) -> p0.timer));
         if (list.isEmpty())
             return game.initialPlayer;
         player = list.get(0);
@@ -73,13 +71,9 @@ public class Search {
 
     public Player findWayThrowPoints(Player player, Point... points) {
         for (Point v : points) {
-            player = strategy.findWayToPoint(v, player);
+            player = strategy.findWayToPoint(player, v);
         }
         return player;
-    }
-
-    public Player findWayToPoint(Point destination) {
-        return strategy.findWayToPoint(destination, game.initialPlayer);
     }
 
     public String getHistory() {
