@@ -62,7 +62,7 @@ public class Game {
     boolean valid() {
         if (board.isEmpty() || EXIT == null || BOOK == null || CLOAK == null)
             return false;
-        if (getCardsByPoint(EXIT).contains(Card.CAT)
+        if (getCardsByPoint(EXIT).contains(Card.SEEN)
                 || getCardsByPoint(EXIT).contains(Card.BOOK))
             return false;
         if (getCardsByPoint(BOOK).contains(Card.SEEN))
