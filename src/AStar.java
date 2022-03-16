@@ -2,54 +2,24 @@ import java.util.*;
 
 public class AStar implements Strategy {
     Game game;
-    final private Move[][] history = new Move[Game.ROWS][Game.COLUMNS];
+    final private Player[][] history = new Player[Game.ROWS][Game.COLUMNS];
 
     Point BOOK;
     Point CLOAK;
 
-    /**
-     * Searches for game solution
-     *
-     * @param debug indicates if debug output should be shown
-     * @return the final solution as agent that won
-     */
-    @Override
-    public Player run(boolean debug) {
-        Player p = findWayToPoint(new Point(9, 9), game.initialPlayer, new boolean[Game.ROWS][Game.COLUMNS]);
-
-        findWayToPoint(new Point(9, 9), findWayToPoint(CLOAK, game.initialPlayer));
-
-        List<Player> list = new ArrayList<>();
-        p = findWayToPoint(game.EXIT, findWayToPoint(BOOK, game.initialPlayer));
-        if (p != null) {
-            list.add(p);
-        }
-        p = findWayToPoint(game.EXIT, findWayToPoint(BOOK, findWayToPoint(CLOAK, game.initialPlayer)));
-        if (p != null) {
-            list.add(p);
-        }
-        p = findWayToPoint(game.EXIT, findWayToPoint(CLOAK, findWayToPoint(BOOK, game.initialPlayer)));
-        if (p != null) {
-            list.add(p);
-        }
-        list.sort(Comparator.comparingInt((Player p0) -> p0.timer));
-        if (list.isEmpty())
-            return game.initialPlayer;
-        p = list.get(0);
-        if (debug) {
-            System.out.println("A*:");
-            System.out.println(game.getBoard());
-            System.out.println(p);
-            System.out.println(p.getPath());
-            Game.showPath(p.getPath());
-        }
-        return p;
+    public Point getBOOK() {
+        return BOOK;
     }
 
-    Player findWayToPoint(Point finish, Player player) {
-        if (player == null || finish == null)
+    public Point getCLOAK() {
+        return CLOAK;
+    }
+
+
+    public Player findWayToPoint(Point destination, Player player) {
+        if (player == null || destination == null)
             return null;
-        return findWayToPoint(finish, player, new boolean[Game.ROWS][Game.COLUMNS]);
+        return findWayToPoint(destination, player, new boolean[Game.ROWS][Game.COLUMNS]);
     }
 
     /**
@@ -80,7 +50,7 @@ public class AStar implements Strategy {
             if (player.ok(m.coordinates) && !used[m.coordinates.x][m.coordinates.y]) {
                 used[m.coordinates.x][m.coordinates.y] = true;
                 q.add(m);
-                history[m.coordinates.x][m.coordinates.y] = m;
+                history[m.coordinates.x][m.coordinates.y] = m.player;
             }
         }
 
@@ -88,7 +58,7 @@ public class AStar implements Strategy {
         while (!q.isEmpty()) {
             Move current = q.poll();
             Player p = current.execute();
-            history[p.coordinates.x][p.coordinates.y] = current;
+            history[p.coordinates.x][p.coordinates.y] = current.player;
             if (p.getVisibleCardsByPoint(p.coordinates).contains(Card.BOOK))
                 BOOK = p.coordinates;
             if (p.getVisibleCardsByPoint(p.coordinates).contains(Card.CLOAK))
@@ -101,7 +71,7 @@ public class AStar implements Strategy {
                 if (p.ok(m.coordinates) && !used[m.coordinates.x][m.coordinates.y]) {
                     used[m.coordinates.x][m.coordinates.y] = true;
                     q.add(m);
-                    history[m.coordinates.x][m.coordinates.y] = m;
+                    history[m.coordinates.x][m.coordinates.y] = m.player;
                 }
             }
         }
@@ -114,16 +84,7 @@ public class AStar implements Strategy {
         return this;
     }
 
-
-    public String getHistory() {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < Game.ROWS; i++) {
-            for (int j = 0; j < Game.COLUMNS; j++) {
-                Move m = history[i][j];
-                result.append(m == null ? "-1" : m.execute().timer).append("\t");
-            }
-            result.append("\n");
-        }
-        return result.toString();
+    public Player[][] getHistory() {
+        return history;
     }
 }

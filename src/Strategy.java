@@ -1,7 +1,11 @@
 public interface Strategy {
-
-    Player run(boolean debug);
-
     Strategy setGame(Game game);
 
+    Point getBOOK();
+
+    Point getCLOAK();
+
+    Player findWayToPoint(Point destination, Player player);
+
+    Player[][] getHistory();
 }

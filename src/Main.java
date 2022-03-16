@@ -3,18 +3,20 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
 //        interesting game case
-//        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, new Backtracking());
-//        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, new AStar());
+        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, "Backtracking");
+        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, "A*");
 
+//        new Search("A*").setGame(new Game(0, 1)).run(true);
+//        new Search("Backtracking").setGame(new Game(10, 1)).run(true);
 //        example of a random game
 //        new AStar().setGame(new Game(10, 1)).run(true);
-//        new Backtracking().setGame(new Game(10, 1)).run(true);
+//        new Backtracking().setGame(new Game(3, 1)).run(true);
 
 //        to input console test
 //        consoleTest();
 
 //        run generated tests
-        test(100);
+//        test(10);
     }
 
     static void consoleTest() {
@@ -22,11 +24,11 @@ public class Main {
         String input = scan.nextLine();
         int perception = scan.nextInt();
 
-        runGame(input, perception, new Backtracking());
-        runGame(input, perception, new AStar());
+        runGame(input, perception, "A*");
+        runGame(input, perception, "Backtracking");
     }
 
-    static void runGame(String input, int perception, Strategy strategy) {
+    static void runGame(String input, int perception, String strategy) {
         String[] tokens = input.replaceAll("[^],0-8]", "").split("]");
 
         Point[] points = new Point[6];
@@ -37,7 +39,7 @@ public class Main {
         }
         try {
             Game game = new Game(points, perception);
-            strategy.setGame(game).run(true);
+            new Search(strategy).setGame(game).run(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -50,11 +52,11 @@ public class Main {
         List<Integer> diff = new ArrayList<>();
 
         for (int i = 0; i < n; i++) {
-            Strategy strategy1 = new Backtracking().setGame(new Game(i, 1));
-            Strategy strategy2 = new AStar().setGame(new Game(i, 1));
+            Search search1 = new Search("backtracking").setGame(new Game(i, 1));
+            Search search2 = new Search("A*").setGame(new Game(i, 1));
 
-            Player p1 = strategy1.run(false);
-            Player p2 = strategy2.run(false);
+            Player p1 = search1.run(false);
+            Player p2 = search2.run(false);
             System.out.println(i + ": " + p1 + "\t" + p2);
             if (p1.status != p2.status)
                 break;
