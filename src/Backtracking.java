@@ -4,12 +4,9 @@ import java.util.Queue;
 
 public class Backtracking implements Strategy {
     Search search;
-    final private Player[][] history;
 
-
-    public Backtracking(Search search, Player[][] history) {
+    public Backtracking(Search search) {
         this.search = search;
-        this.history = history;
     }
 
     /**
@@ -39,13 +36,9 @@ public class Backtracking implements Strategy {
         if (player.status == Status.LOST)
             return null;
 
-        history[player.getX()][player.getY()] = player;
-        used[player.getX()][player.getY()] = true;
 
-        if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.BOOK))
-            search.BOOK = player.coordinates;
-        if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.CLOAK))
-            search.CLOAK = player.coordinates;
+        used[player.getX()][player.getY()] = true;
+        search.add(player);
 
         if (player.coordinates.equals(destination))
             return player;

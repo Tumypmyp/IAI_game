@@ -12,21 +12,20 @@ public class Game {
 
     final private List<List<List<Card>>> board = new ArrayList<>();
     final private Random random;
-    final public Player initialPlayer;
-
     private Point BOOK;
-    public Point EXIT;
     private Point CLOAK;
+    private Point CAT;
+    private Point FILCH;
+    public Point EXIT;
 
     /**
      * Constructor function initiates new instance of manually entered game
      *
      * @param points     is a 6 points array, places of: actor, Argus Filch, Mrs Norris,
      *                   the book, the invisibility cloak and an exit door
-     * @param perception is a type of perception zone for actor
      * @throws Exception when input is incorrect
      */
-    Game(Point[] points, int perception) throws Exception {
+    Game(Point[] points) throws Exception {
         for (int i = 0; i < ROWS; i++) {
             board.add(new ArrayList<>());
             for (int j = 0; j < COLUMNS; j++)
@@ -34,21 +33,21 @@ public class Game {
         }
 
         this.random = null;
+        this.FILCH = points[1];
+        this.CAT = points[2];
         this.BOOK = points[3];
         this.CLOAK = points[4];
         this.EXIT = points[5];
 
+        getCardsByPoint(FILCH).add(Card.CAT);
+        addCatPerception(FILCH, 3);
+
+        getCardsByPoint(CAT).add(Card.CAT);
+        addCatPerception(CAT, 2);
+
         getCardsByPoint(BOOK).add(Card.BOOK);
         getCardsByPoint(CLOAK).add(Card.CLOAK);
         getCardsByPoint(EXIT).add(Card.EXIT);
-
-        getCardsByPoint(points[1]).add(Card.CAT);
-        addCatPerception(points[1], 3);
-
-        getCardsByPoint(points[2]).add(Card.CAT);
-        addCatPerception(points[2], 2);
-
-        this.initialPlayer = new Player(this, perception);
 
         if (!valid() || points[0].x != 0 || points[0].y != 0 || points.length != 6)
             throw new Exception("bad input parameters");
@@ -74,9 +73,8 @@ public class Game {
 
     /**
      * @param seed       is a value for initializing Random
-     * @param perception is a type of perception zone for actor
      */
-    Game(int seed, int perception) {
+    Game(int seed) {
         random = new Random(seed);
 
         while (!valid()) {
@@ -87,15 +85,13 @@ public class Game {
                     board.get(i).add(new ArrayList<>());
             }
 
-            addCatPerception(addCard(Card.CAT), 2);
-            addCatPerception(addCard(Card.CAT), 3);
+            addCatPerception(FILCH = addCard(Card.CAT), 3);
+            addCatPerception(CAT = addCard(Card.CAT), 2);
 
             BOOK = addCard(Card.BOOK);
             CLOAK = addCard(Card.CLOAK);
             EXIT = addCard(Card.EXIT);
         }
-
-        this.initialPlayer = new Player(this, perception);
     }
 
     /**
@@ -200,7 +196,7 @@ public class Game {
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {
                 String s = board.get(i).get(j).toString();
-                result.append(s == "[]" ? "[    ]" : s);
+                result.append(s.equals("[]") ? "[    ]" : s);
             }
             result.append("\n");
         }

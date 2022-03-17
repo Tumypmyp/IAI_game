@@ -3,18 +3,21 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
 //        interesting game case
-        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, "Backtracking");
-        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, "A*");
+//        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, "Backtracking");
+//        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, "A*");
 
-        new Search(new Game(0, 1), "A*").run(true);
-        new Search(new Game(0, 1), "Backtracking").run(true);
-//        example of a random game
+//         new Search(new Game(4699), "A*", 1).run(true);
+//
+//         new Search(new Game(4699), "Backtracking", 1).run(true);
+
+//          example of a random game
 
 //        to input console test
 //        consoleTest();
 
 //        run generated tests
-        test(10);
+        test(4020, 4540);
+
     }
 
     static void consoleTest() {
@@ -36,22 +39,23 @@ public class Main {
 //            System.out.println(points[i]);
         }
         try {
-            Game game = new Game(points, perception);
-            new Search(game, strategy).run(true);
+            Game game = new Game(points);
+            Player player = new Search(game, strategy, perception).run(true);
+            System.out.println(player);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    static void test(int n) {
+    static void test(int L, int R) {
 
         Map<Status, List<Integer>> statistic2 = new HashMap<>();
         Map<Status, List<Integer>> statistic1 = new HashMap<>();
         List<Integer> diff = new ArrayList<>();
 
-        for (int i = 0; i < n; i++) {
-            Search search1 = new Search(new Game(i, 1), "backtracking");
-            Search search2 = new Search(new Game(i, 1), "A*");
+        for (int i = L; i < R; i++) {
+            Search search1 = new Search(new Game(i), "backtracking", 1);
+            Search search2 = new Search(new Game(i), "A*", 1);
 
             Player p1 = search1.run(false);
             Player p2 = search2.run(false);
@@ -68,21 +72,23 @@ public class Main {
 
         }
 
-        System.out.println("Backtracking:");
+        System.out.println("\n|Backtracking:status | avg len | number af games|\n|---|---|---|");
         for (Map.Entry<Status, List<Integer>> entry : statistic1.entrySet()) {
             OptionalDouble average = entry.getValue().stream().mapToDouble(a -> a).average();
             double avg = average.isPresent() ? average.getAsDouble() : 0;
-            System.out.println(entry.getKey() + ":" + avg + " " + entry.getValue().size());
+            System.out.printf("|%s|%f|%d|\n", entry.getKey(), avg, entry.getValue().size());
         }
 
-        System.out.println("A*:");
+        System.out.println("\n|A*:status | avg len | number af games|\n|---|---|---|");
         for (Map.Entry<Status, List<Integer>> entry : statistic2.entrySet()) {
             OptionalDouble average = entry.getValue().stream().mapToDouble(a -> a).average();
             double avg = average.isPresent() ? average.getAsDouble() : 0;
-            System.out.println(entry.getKey() + ":" + avg + " " + entry.getValue().size());
+            System.out.printf("|%s|%f|%d|\n", entry.getKey(), avg, entry.getValue().size());
         }
-//        for (int i = 0; i < diff.size(); i++)
-//            System.out.print(diff.get(i) + " ");
+        for (int i = 0; i < diff.size(); i++)
+            if (diff.get(i) != 0) {
+                System.out.println(i + " : " + diff.get(i));
+            }
     }
 }
 

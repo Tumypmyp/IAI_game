@@ -4,11 +4,9 @@ import java.util.Queue;
 
 public class AStar implements Strategy {
     final private Search search;
-    final private Player[][] history;
 
-    public AStar(Search search, Player[][] history) {
+    public AStar(Search search) {
         this.search = search;
-        this.history = history;
     }
 
     public Player findWayToPoint(Player player, Point destination) {
@@ -33,14 +31,8 @@ public class AStar implements Strategy {
 //                -> m.getDistanceTo(destination) + m.player.timer);
         Queue<Move> q = new PriorityQueue<>(1, byDistance);
 
-
         used[player.getX()][player.getY()] = true;
-        history[player.getX()][player.getY()] = player;
-
-        if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.BOOK))
-            search.BOOK = player.coordinates;
-        if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.CLOAK))
-            search.CLOAK = player.coordinates;
+        search.add(player);
 
         for (Point move : Player.MOVES) {
             Move m = new Move(player, move);
@@ -54,15 +46,11 @@ public class AStar implements Strategy {
             Player p = current.execute();
             if (used[p.getX()][p.getY()])
                 continue;
-            used[p.getX()][p.getY()] = true;
-            history[p.getX()][p.getY()] = current.player;
 
-            if (p.getVisibleCardsByPoint(p.coordinates).contains(Card.BOOK)) {
-                search.BOOK = p.coordinates;
-            }
-            if (p.getVisibleCardsByPoint(p.coordinates).contains(Card.CLOAK)) {
-                search.CLOAK = p.coordinates;
-            }
+            used[p.getX()][p.getY()] = true;
+            search.add(p);
+
+
 
             if (p.coordinates.equals(destination)) {
                 return p;
