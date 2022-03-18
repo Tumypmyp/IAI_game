@@ -1,6 +1,9 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Agent that have sensors and actuators.
@@ -10,8 +13,26 @@ public class Player {
     boolean haveCloak;
     final int timer;
     final Point coordinates;
-    final int perception;
-    final static List<Point> MOVES = new ArrayList<>();
+    final Point[] perception;
+    final static Point[][] perceptionPoints = {
+            {
+                    new Point(-1, -1), new Point(-1, 0), new Point(-1, 1),
+                    new Point(0, -1), new Point(0, 0), new Point(0, 1),
+                    new Point(1, -1), new Point(1, 0), new Point(1, 1)},
+            {
+                    new Point(-2, -1), new Point(-2, 0), new Point(-2, 1),
+                    new Point(2, -1), new Point(2, 0), new Point(2, 1),
+                    new Point(-1, -2), new Point(0, -2), new Point(1, -2),
+                    new Point(1, 2), new Point(0, 2), new Point(1, 2),
+            }
+    };
+
+    final static Point[] MOVES = {
+            new Point(-1, -1), new Point(-1, 0), new Point(-1, 1),
+            new Point(0, -1), new Point(0, 0), new Point(0, 1),
+            new Point(1, -1), new Point(1, 0), new Point(1, 1)
+    };
+
 
     Player parent;
     Game game;
@@ -20,17 +41,12 @@ public class Player {
     /**
      * Constructor that initiates Player instance and updates its status according to the game update function
      *
-     * @param game       is environment of the agent
-     * @param perception is a perception type of the agent
+     * @param game is environment of the agent
      */
-    Player(Game game, int perception) {
-        for (int x = -1, i = 0; x <= 1; x++)
-            for (int y = -1; y <= 1; y++, i++)
-                MOVES.add(new Point(x, y));
-
+    Player(Game game, int perceptionType) {
         coordinates = new Point(0, 0);
         timer = 0;
-        this.perception = perception;
+        this.perception = perceptionPoints[perceptionType - 1];
         this.game = game;
         haveBook = false;
         haveCloak = false;
@@ -64,9 +80,13 @@ public class Player {
      * @return list of cards he saw
      */
     public List<Card> getVisibleCardsByPoint(Point p) {
+        if (!Game.inside(p))
+            return new ArrayList<>();
         Point diff = Point.add(p, Point.not(coordinates));
-        if (Math.abs(diff.x) <= perception && Math.abs(diff.y) <= perception)
+        if (diff.equals(new Point(0, 0)))
             return game.getCardsByPoint(p);
+        if (Arrays.asList(perception).contains(diff))
+            return game.getCardsByPoint(p).stream().filter(Predicate.isEqual(Card.SEEN)).collect(Collectors.toList());
         return new ArrayList<>();
     }
 
@@ -84,16 +104,6 @@ public class Player {
         return coordinates.y;
     }
 
-    /**
-     * Checks if agent can go to the point
-     *
-     * @param p point agent wants to check
-     * @return true if point is safe to walk
-     */
-    public boolean ok(Point p) {
-        return Game.inside(p) && !getVisibleCardsByPoint(p).contains(Card.CAT)
-                && (!getVisibleCardsByPoint(p).contains(Card.SEEN) || haveCloak);
-    }
 
     /**
      * @return the string representation af the agent state

@@ -3,12 +3,16 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
 //        interesting game case
-//        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, "Backtracking");
-//        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, "A*");
+        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, "Backtracking");
+        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, "A*");
 
-//         new Search(new Game(4699), "A*", 1).run(true);
+
+//        runGame("[0, 0] [0, 3] [1, 3] [7, 8] [0, 0] [8, 8]", 1, "A*1");
+//        runGame("[0, 0] [0, 3] [1, 3] [7, 8] [0, 0] [8, 8]", 1, "B");
 //
-//         new Search(new Game(4699), "Backtracking", 1).run(true);
+//        new Search(new Game(5288), "A*", 1).run(true);
+//        new Search(new Game(5288), "Back", 1).run(true);
+//         new Search(new Game(968), "Backtracking", 2).run(true);
 
 //          example of a random game
 
@@ -16,7 +20,8 @@ public class Main {
 //        consoleTest();
 
 //        run generated tests
-        test(4020, 4540);
+        test(0, 1000, 1);
+
 
     }
 
@@ -41,21 +46,21 @@ public class Main {
         try {
             Game game = new Game(points);
             Player player = new Search(game, strategy, perception).run(true);
-            System.out.println(player);
+//            System.out.println(player);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    static void test(int L, int R) {
+    static void test(int L, int R, int perception) {
 
         Map<Status, List<Integer>> statistic2 = new HashMap<>();
         Map<Status, List<Integer>> statistic1 = new HashMap<>();
         List<Integer> diff = new ArrayList<>();
 
         for (int i = L; i < R; i++) {
-            Search search1 = new Search(new Game(i), "backtracking", 1);
-            Search search2 = new Search(new Game(i), "A*", 1);
+            Search search1 = new Search(new Game(i), "backtracking", perception);
+            Search search2 = new Search(new Game(i), "A*", perception);
 
             Player p1 = search1.run(false);
             Player p2 = search2.run(false);

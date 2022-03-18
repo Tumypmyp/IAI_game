@@ -3,16 +3,16 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public class Search {
-    final private String name;
-    final private Strategy strategy;
 
+public class Search {
     final private Game game;
     final private Player initialPlayer;
 
-    Point BOOK;
-    Point CLOAK;
+    final private String name;
+    final private Strategy strategy;
     final History history = new History();
+
+
 
     Search(Game game, String name, int perception) {
         if (name.toLowerCase().charAt(0) == 'a') {
@@ -27,25 +27,35 @@ public class Search {
     }
 
     Player run(boolean debug) {
-        Player player = findWayThrowPoints(new Point(9, 9));
 
 //        if (debug) {
-//            System.out.println("Backtracking:");
+//            System.out.println(name + ":");
 //            System.out.println(game.getBoard());
 //            System.out.println(getHistory());
+//            System.out.flush();
+//        }
+        Player player = findWayThrowPoints(new Point(9, 9));
+        history.solveCats();
+//        if (initialPlayer.status != Status.LOST) {
+//
+//            System.out.println(name + ":");
+//            System.out.println(game.getBoard());
+//            System.out.println(getHistory());
+//            System.out.println( history.solveCats());
 //        }
 
 //        optimization
 //        if (CLOAK == null) {
 //            return findWayThrowPoints(BOOK, EXIT);
 //        }
-        findWayThrowPoints(CLOAK, new Point(9, 9));
+        findWayThrowPoints(history.CLOAK, new Point(9, 9));
+        history.solveCats();
 
         List<Player> list = new ArrayList<>();
 
-        list.add(findWayThrowPoints(BOOK, game.EXIT));
-        list.add(findWayThrowPoints(BOOK, CLOAK, game.EXIT));
-        list.add(findWayThrowPoints(CLOAK, BOOK, game.EXIT));
+        list.add(findWayThrowPoints(history.BOOK, game.EXIT));
+        list.add(findWayThrowPoints(history.BOOK, history.CLOAK, game.EXIT));
+        list.add(findWayThrowPoints(history.CLOAK, history.BOOK, game.EXIT));
 
         list.removeIf(Objects::isNull);
         list.removeIf(p -> p.status != Status.WON);
@@ -78,12 +88,9 @@ public class Search {
         return player;
     }
 
-    public void add(Player player) {
-        history.add(player);
-        if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.BOOK))
-            BOOK = player.coordinates;
-        if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.CLOAK))
-            CLOAK = player.coordinates;
+
+    List<Move> getMoves(Player player) {
+        return history.getMoves(player);
     }
 
     public String getHistory() {

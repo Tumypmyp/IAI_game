@@ -10,6 +10,8 @@ public class Move {
     }
 
     Player execute() {
+        if (player.status == Status.LOST)
+            return player;
         return new Player(player, nextMove);
     }
 
@@ -24,4 +26,5 @@ public class Move {
         int y = Math.abs(p.y);
         return Math.max(x, y);
     }
+
 }

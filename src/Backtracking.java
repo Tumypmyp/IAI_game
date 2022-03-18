@@ -19,8 +19,8 @@ public class Backtracking implements Strategy {
     public Player findWayToPoint(Player player, Point destination) {
         if (player == null || destination == null)
             return null;
-        Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getMinimalMoves(destination));
-//        Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getDistanceTo(destination));
+//        Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getMinimalMoves(destination));
+        Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getDistanceTo(destination));
         return findWayToPoint(player, destination, byDistance, new boolean[Game.ROWS][Game.COLUMNS]);
     }
 
@@ -36,19 +36,19 @@ public class Backtracking implements Strategy {
         if (player.status == Status.LOST)
             return null;
 
-
         used[player.getX()][player.getY()] = true;
-        search.add(player);
+        search.history.add(player);
 
         if (player.coordinates.equals(destination))
             return player;
 
         Queue<Move> q = new PriorityQueue<>(1, cmp);
-        for (Point p : Player.MOVES) {
-            Move move = new Move(player, p);
-            if (player.ok(move.coordinates))
-                q.add(move);
-        }
+        q.addAll(search.getMoves(player));
+//        for (Point p : Player.MOVES) {
+//            Move move = new Move(player, p);
+//            if (player.ok(move.coordinates))
+//                q.add(move);
+//        }
         while (!q.isEmpty()) {
             Move move = q.poll();
             if (!used[move.coordinates.x][move.coordinates.y]) {

@@ -27,38 +27,37 @@ public class AStar implements Strategy {
         if (player.coordinates.equals(destination))
             return player;
         Comparator<Move> byDistance = Comparator.comparingInt((Move m)
-                -> m.getMinimalMoves(destination) + m.player.timer);
-//                -> m.getDistanceTo(destination) + m.player.timer);
+//                -> m.getMinimalMoves(destination) + m.player.timer);
+                -> m.getDistanceTo(destination) + m.player.timer);
         Queue<Move> q = new PriorityQueue<>(1, byDistance);
 
         used[player.getX()][player.getY()] = true;
-        search.add(player);
+        search.history.add(player);
 
-        for (Point move : Player.MOVES) {
-            Move m = new Move(player, move);
-            if (player.ok(m.coordinates) && !used[m.coordinates.x][m.coordinates.y]) {
-                q.add(m);
+        for (Move move : search.getMoves(player)) {
+            if (!used[move.coordinates.x][move.coordinates.y]) {
+                q.add(move);
             }
         }
 
         while (!q.isEmpty()) {
             Move current = q.poll();
-            Player p = current.execute();
-            if (used[p.getX()][p.getY()])
+            player = current.execute();
+            if (player == null)
+                System.out.println("asdf");
+            if (used[player.getX()][player.getY()])
                 continue;
 
-            used[p.getX()][p.getY()] = true;
-            search.add(p);
+            used[player.getX()][player.getY()] = true;
+            search.history.add(player);
 
 
-
-            if (p.coordinates.equals(destination)) {
-                return p;
+            if (player.coordinates.equals(destination)) {
+                return player;
             }
-            for (Point move : Player.MOVES) {
-                Move m = new Move(p, move);
-                if (p.ok(m.coordinates) && !used[m.coordinates.x][m.coordinates.y]) {
-                    q.add(m);
+            for (Move move : search.getMoves(player)) {
+                if (!used[move.coordinates.x][move.coordinates.y]) {
+                    q.add(move);
                 }
             }
         }
