@@ -2,6 +2,8 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
+import static java.lang.System.exit;
+
 public class Backtracking implements Strategy {
     Search search;
 
@@ -16,12 +18,12 @@ public class Backtracking implements Strategy {
      * @param destination the assumed place of a card
      * @return the agent that found the card
      */
-    public Player findWayToPoint(Player player, Point destination) {
+    public Player findAWayToPoint(Player player, Point destination) {
         if (player == null || destination == null)
             return null;
 //        Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getMinimalMoves(destination));
         Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getDistanceTo(destination));
-        return findWayToPoint(player, destination, byDistance, new boolean[Game.ROWS][Game.COLUMNS]);
+        return findAWayToPoint(player, destination, byDistance, new boolean[Game.ROWS][Game.COLUMNS]);
     }
 
     /**
@@ -32,9 +34,11 @@ public class Backtracking implements Strategy {
      * @param used   what places where visited
      * @return the agent that found the card
      */
-    public Player findWayToPoint(Player player, Point destination, Comparator<Move> cmp, boolean[][] used) {
-        if (player.status == Status.LOST)
+    public Player findAWayToPoint(Player player, Point destination, Comparator<Move> cmp, boolean[][] used) {
+        if (player.status == Status.LOST) {
+//         exit(0);
             return null;
+        }
 
         used[player.getX()][player.getY()] = true;
         search.history.add(player);
@@ -42,17 +46,11 @@ public class Backtracking implements Strategy {
         if (player.coordinates.equals(destination))
             return player;
 
-        Queue<Move> q = new PriorityQueue<>(1, cmp);
+        Queue<Move> q = new PriorityQueue<>(cmp);
         q.addAll(search.getMoves(player));
-//        for (Point p : Player.MOVES) {
-//            Move move = new Move(player, p);
-//            if (player.ok(move.coordinates))
-//                q.add(move);
-//        }
-        while (!q.isEmpty()) {
-            Move move = q.poll();
+        for (Move move : q) {
             if (!used[move.coordinates.x][move.coordinates.y]) {
-                Player p2 = findWayToPoint(move.execute(), destination, cmp, used);
+                Player p2 = findAWayToPoint(move.execute(), destination, cmp, used);
                 if (p2 != null)
                     return p2;
             }

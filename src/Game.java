@@ -10,6 +10,8 @@ public class Game {
     final static int ROWS = 9;
     final static int COLUMNS = 9;
 
+    final static Point INF = new Point(ROWS + 1, COLUMNS + 1);
+
     final private List<List<List<Card>>> board = new ArrayList<>();
     final private Random random;
     private Point BOOK;

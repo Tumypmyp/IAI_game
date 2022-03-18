@@ -1,3 +1,3 @@
 public interface Strategy {
-    Player findWayToPoint(Player player, Point destination);
+    Player findAWayToPoint(Player player, Point destination);
 }

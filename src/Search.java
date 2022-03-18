@@ -34,7 +34,7 @@ public class Search {
 //            System.out.println(getHistory());
 //            System.out.flush();
 //        }
-        Player player = findWayThrowPoints(new Point(9, 9));
+        findAWayThrowPoints(Game.INF);
         history.solveCats();
 //        if (initialPlayer.status != Status.LOST) {
 //
@@ -48,14 +48,14 @@ public class Search {
 //        if (CLOAK == null) {
 //            return findWayThrowPoints(BOOK, EXIT);
 //        }
-        findWayThrowPoints(history.CLOAK, new Point(9, 9));
+        findAWayThrowPoints(history.CLOAK, Game.INF);
         history.solveCats();
 
         List<Player> list = new ArrayList<>();
 
-        list.add(findWayThrowPoints(history.BOOK, game.EXIT));
-        list.add(findWayThrowPoints(history.BOOK, history.CLOAK, game.EXIT));
-        list.add(findWayThrowPoints(history.CLOAK, history.BOOK, game.EXIT));
+        list.add(findAWayThrowPoints(history.BOOK, game.EXIT));
+        list.add(findAWayThrowPoints(history.BOOK, history.CLOAK, game.EXIT));
+        list.add(findAWayThrowPoints(history.CLOAK, history.BOOK, game.EXIT));
 
         list.removeIf(Objects::isNull);
         list.removeIf(p -> p.status != Status.WON);
@@ -63,7 +63,7 @@ public class Search {
         list.sort(Comparator.comparingInt((Player p0) -> p0.timer));
         if (list.isEmpty())
             return initialPlayer;
-        player = list.get(0);
+        Player player = list.get(0);
 
         if (debug) {
             System.out.println(name + ":");
@@ -77,13 +77,13 @@ public class Search {
         return player;
     }
 
-    public Player findWayThrowPoints(Point... points) {
-        return findWayThrowPoints(initialPlayer, points);
+    public Player findAWayThrowPoints(Point... points) {
+        return findAWayThrowPoints(initialPlayer, points);
     }
 
-    public Player findWayThrowPoints(Player player, Point... points) {
+    public Player findAWayThrowPoints(Player player, Point... points) {
         for (Point v : points) {
-            player = strategy.findWayToPoint(player, v);
+            player = strategy.findAWayToPoint(player, v);
         }
         return player;
     }

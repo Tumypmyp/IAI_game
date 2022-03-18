@@ -19,7 +19,7 @@ public class History {
 
     public void add(Player player) {
         players[player.getX()][player.getY()] = player;
-        if (player.status != Status.LOST)
+        if (!player.haveCloak && player.status != Status.LOST)
             addNotCat(player.coordinates);
         if (player.getVisibleCardsByPoint(player.coordinates).contains(Card.BOOK))
             BOOK = player.coordinates;
@@ -31,7 +31,6 @@ public class History {
             if (Game.inside(p)) {
                 if (!player.getVisibleCardsByPoint(p).contains(Card.SEEN)) {
                     addNotCat(p);
-                    type[p.x][p.y] = 1;
                 } else {
                     seen[p.x][p.y] = true;
                     type[p.x][p.y] = 2;
@@ -42,6 +41,7 @@ public class History {
     }
 
     void addNotCat(Point p) {
+        type[p.x][p.y] = 1;
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
                 if (Game.inside(new Point(p.x + i, p.y + j)))
@@ -56,13 +56,15 @@ public class History {
     public boolean ok(Move move) {
         if (!Game.inside(move.coordinates))
             return false;
-        if (move.player.haveCloak && cats != null && !cats.contains(move.coordinates))
-            return true;
+        if (move.player.haveCloak && cats != null) {
+            return !cats.contains(move.coordinates);
+        }
 
 
         Point p = move.coordinates;
         if (type[p.x][p.y] == 1)
             return true;
+//        return false;
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
                 if (Game.inside(new Point(p.x + i, p.y + j)) && !notCat[p.x + i][p.y + j])
@@ -82,28 +84,12 @@ public class History {
         return res;
     }
 
-    public class Pair<L, R> {
+    class Pair<L, R> {
         private L l;
         private R r;
 
         public Pair(L l, R r) {
             this.l = l;
-            this.r = r;
-        }
-
-        public L getL() {
-            return l;
-        }
-
-        public R getR() {
-            return r;
-        }
-
-        public void setL(L l) {
-            this.l = l;
-        }
-
-        public void setR(R r) {
             this.r = r;
         }
     }
@@ -142,12 +128,12 @@ public class History {
                         }
                 }
             }
+
         cats = new HashSet<>();
         for (Pair<Point, Point> p : variants) {
             cats.add(p.l);
             cats.add(p.r);
         }
-
         return 0;
     }
 
