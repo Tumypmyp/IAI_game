@@ -10,24 +10,27 @@ public class Game {
     final static int ROWS = 9;
     final static int COLUMNS = 9;
 
-    final static Point INF = new Point(ROWS + 1, COLUMNS + 1);
+    final static Point START = new Point(0, 0);
+    final static Point INF = new Point(ROWS, COLUMNS);
 
     final private List<List<List<Card>>> board = new ArrayList<>();
     final private Random random;
+    private Point FILCH;
+    private Point CAT;
     private Point BOOK;
     private Point CLOAK;
-    private Point CAT;
-    private Point FILCH;
     public Point EXIT;
 
     /**
-     * Constructor function initiates new instance of manually entered game
+     * Constructor function initiates new instance of a manually described game scenario
      *
-     * @param points     is a 6 points array, places of: actor, Argus Filch, Mrs Norris,
-     *                   the book, the invisibility cloak and an exit door
-     * @throws Exception when input is incorrect
+     * @param points is a 6 points array, places of: actor, Argus Filch, Mrs Norris,
+     *               the book, the invisibility cloak and an exit door
+     * @throws Exception when input is not valid
      */
     Game(Point[] points) throws Exception {
+        if (points.length != 6 || points[0].x != 0 || points[0].y != 0)
+            throw new Exception("bad input parameters");
         for (int i = 0; i < ROWS; i++) {
             board.add(new ArrayList<>());
             for (int j = 0; j < COLUMNS; j++)
@@ -51,12 +54,12 @@ public class Game {
         getCardsByPoint(CLOAK).add(Card.CLOAK);
         getCardsByPoint(EXIT).add(Card.EXIT);
 
-        if (!valid() || points[0].x != 0 || points[0].y != 0 || points.length != 6)
+        if (!valid())
             throw new Exception("bad input parameters");
     }
 
     /**
-     * Checks board generated for validness
+     * Checks generated board for errors
      *
      * @return true if board valid
      */
@@ -70,11 +73,16 @@ public class Game {
             return false;
         if (getCardsByPoint(CLOAK).contains(Card.SEEN))
             return false;
+        if (getCardsByPoint(START).contains(Card.SEEN))
+            return false;
         return true;
     }
 
     /**
-     * @param seed       is a value for initializing Random
+     * Constructor function initiates new instance of a game.
+     * Constructor randomly generates the map until it is considered valid.
+     *
+     * @param seed is a value for initializing random
      */
     Game(int seed) {
         random = new Random(seed);
@@ -87,12 +95,15 @@ public class Game {
                     board.get(i).add(new ArrayList<>());
             }
 
-            addCatPerception(FILCH = addCard(Card.CAT), 3);
-            addCatPerception(CAT = addCard(Card.CAT), 2);
+            FILCH = addCardToRandomPoint(Card.CAT);
+            addCatPerception(FILCH, 3);
 
-            BOOK = addCard(Card.BOOK);
-            CLOAK = addCard(Card.CLOAK);
-            EXIT = addCard(Card.EXIT);
+            CAT = addCardToRandomPoint(Card.CAT);
+            addCatPerception(CAT, 2);
+
+            BOOK = addCardToRandomPoint(Card.BOOK);
+            CLOAK = addCardToRandomPoint(Card.CLOAK);
+            EXIT = addCardToRandomPoint(Card.EXIT);
         }
     }
 
@@ -100,7 +111,7 @@ public class Game {
      * Places SEEN cards in perception zone of an Inspector
      *
      * @param CAT        is a point that indicates place of an Inspector
-     * @param perception perception of an Inspector (2 - for Mrs Norris, 3 - for Argus Filch)
+     * @param perception perception depth of an Inspector (2 - for Mrs Norris, 3 - for Argus Filch)
      */
     void addCatPerception(Point CAT, int perception) {
         for (int i = -perception + 1; i < perception; i++)
@@ -115,16 +126,16 @@ public class Game {
      * Places a card in random place of the board
      *
      * @param card is a card type
-     * @return the card place
+     * @return the place assigned to the card
      */
-    Point addCard(Card card) {
+    Point addCardToRandomPoint(Card card) {
         Point CARD = makeRandomPoint();
         getCardsByPoint(CARD).add(card);
         return CARD;
     }
 
     /**
-     * Makes random point in the board
+     * Makes random point in the board scope
      *
      * @return random point
      */
@@ -133,7 +144,7 @@ public class Game {
     }
 
     /**
-     * Makes random int in interval
+     * Makes random int value from an interval
      *
      * @param min minimum value
      * @param max maximum value (not included)
@@ -144,17 +155,17 @@ public class Game {
     }
 
     /**
-     * Finds cards associated with a point
+     * Gets cards associated with a point on the board
      *
      * @param p is the point
-     * @return associated with a point
+     * @return list of cards associated with a point
      */
     public List<Card> getCardsByPoint(Point p) {
         return board.get(p.x).get(p.y);
     }
 
     /**
-     * Checks if a point is inside the board
+     * Checks if a point is inside the boarders
      *
      * @param point that will be checked
      * @return true if point is inside the board
@@ -165,19 +176,21 @@ public class Game {
     }
 
     /**
-     * Updated the actor status and fields according to cards on a board in same place as he.
-     * Player could find a book, a cloak, or LOSE the game if he is seen by a cat
+     * Updated the actor status and fields according to cards on a board in the same place as he.
+     * Player could find a book, a cloak, lose the game if he is seen by a cat, or win.
      *
      * @param player is actor whose fields to be updated
      */
     public void updateStatus(Player player) {
         if (!inside(player.coordinates)) {
             player.status = Status.LOST;
+//            game is lost
             return;
         }
         List<Card> cards = getCardsByPoint(player.coordinates);
         if (cards.contains(Card.CAT) || (!player.haveCloak && cards.contains(Card.SEEN))) {
             player.status = Status.LOST;
+//            game is lost
             return;
         }
         if (cards.contains(Card.BOOK))
@@ -189,24 +202,20 @@ public class Game {
     }
 
     /**
-     * Makes string representation of a board
-     *
-     * @return string representation of a board
+     * Prints the ASCII representation of a board
      */
-    public String getBoard() {
-        StringBuilder result = new StringBuilder();
+    public void print() {
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {
                 String s = board.get(i).get(j).toString();
-                result.append(s.equals("[]") ? "[    ]" : s);
+                System.out.print(s.equals("[]") ? "[    ]" : s);
             }
-            result.append("\n");
+            System.out.println();
         }
-        return result.toString();
     }
 
     /**
-     * Prints a string representation of the path
+     * Prints an ASCII representation of the path on the board.
      *
      * @param path list of points that represent the path
      */
@@ -218,7 +227,7 @@ public class Game {
         }
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++)
-                System.out.print(history[i][j] == 0 ? ".\t" : history[i][j] - 1+ "\t");
+                System.out.print(history[i][j] == 0 ? ".\t" : history[i][j] - 1 + "\t");
             System.out.println();
         }
 

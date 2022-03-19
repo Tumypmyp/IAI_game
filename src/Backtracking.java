@@ -19,7 +19,7 @@ public class Backtracking implements Strategy {
      * @return the agent that found the card
      */
     public Player findAWayToPoint(Player player, Point destination) {
-        if (player == null || destination == null)
+        if (player == null || destination == null || player.status == Status.LOST)
             return null;
 //        Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getMinimalMoves(destination));
         Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getDistanceTo(destination));
@@ -35,11 +35,6 @@ public class Backtracking implements Strategy {
      * @return the agent that found the card
      */
     public Player findAWayToPoint(Player player, Point destination, Comparator<Move> cmp, boolean[][] used) {
-        if (player.status == Status.LOST) {
-//         exit(0);
-            return null;
-        }
-
         used[player.getX()][player.getY()] = true;
         search.history.add(player);
 

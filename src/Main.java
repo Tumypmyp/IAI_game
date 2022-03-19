@@ -3,16 +3,22 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
 //        interesting game case
-        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, "Backtracking");
-        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 1, "A*");
+//        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 2, "Backtracking");
+//        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 2, "A*");
+
+
+//        runGame("[0, 0] [0, 4] [3, 0] [7, 8] [1, 0] [8, 8]", "A*1", 2);
+//        runGame("[0, 0] [0, 4] [3, 0] [7, 8] [1, 0] [8, 8]", 2, "B");
+//        runGame("[0, 0] [0, 3] [1, 3] [7, 8] [0, 0] [8, 8]", 1, "B");
 
 
 //        runGame("[0, 0] [0, 3] [1, 3] [7, 8] [0, 0] [8, 8]", 1, "A*1");
 //        runGame("[0, 0] [0, 3] [1, 3] [7, 8] [0, 0] [8, 8]", 1, "B");
 //
-//        new Search(new Game(5288), "A*", 1).run(true);
-//        new Search(new Game(5288), "Back", 1).run(true);
-//         new Search(new Game(968), "Backtracking", 2).run(true);
+//        new Search(new Game(0), "A*", 2).run(true);
+//        new Search(new Game(3), "Back", 1).run(true);
+//        new Search(new Game(26), "A", 2).run(true);
+//        new Search(new Game(26), "Backtracking", 2).run(true);
 
 //          example of a random game
 
@@ -20,8 +26,7 @@ public class Main {
 //        consoleTest();
 
 //        run generated tests
-        test(0, 1000, 1);
-
+        test(0, 10000, 1);
 
     }
 
@@ -30,18 +35,18 @@ public class Main {
         String input = scan.nextLine();
         int perception = scan.nextInt();
 
-        runGame(input, perception, "A*");
-        runGame(input, perception, "Backtracking");
+        runGame(input, "A*", perception);
+        runGame(input, "Backtracking", perception);
     }
 
-    static void runGame(String input, int perception, String strategy) {
+    static void runGame(String input, String strategy, int perception) {
         String[] tokens = input.replaceAll("[^],0-8]", "").split("]");
 
-        Point[] points = new Point[6];
+        Point[] points = new Point[tokens.length];
         for (int i = 0; i < points.length; i++) {
             String[] idx = tokens[i].split(",");
             points[i] = new Point(Integer.parseInt(idx[0]), Integer.parseInt(idx[1]));
-//            System.out.println(points[i]);
+            System.out.println(points[i]);
         }
         try {
             Game game = new Game(points);

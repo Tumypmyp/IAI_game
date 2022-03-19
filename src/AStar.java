@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -12,7 +13,10 @@ public class AStar implements Strategy {
     public Player findAWayToPoint(Player player, Point destination) {
         if (player == null || destination == null)
             return null;
-        return findAWayToPoint(player, destination, new boolean[Game.ROWS][Game.COLUMNS]);
+        int[][] dist =  new int[Game.ROWS][Game.COLUMNS];
+        for (int i = 0; i < Game.ROWS; i++)
+            Arrays.fill(dist[i], 1000);
+        return findAWayToPoint(player, destination, dist);
     }
 
     /**
@@ -20,10 +24,9 @@ public class AStar implements Strategy {
      *
      * @param player      the initial agent
      * @param destination the point we go to
-     * @param used        what places where visited
      * @return the agent that came to destination
      */
-    Player findAWayToPoint(Player player, Point destination, boolean[][] used) {
+    Player findAWayToPoint(Player player, Point destination, int[][] dist) {
         if (player.coordinates.equals(destination))
             return player;
         Comparator<Move> byDistance = Comparator.comparingInt((Move m)
@@ -31,11 +34,14 @@ public class AStar implements Strategy {
 //                -> m.getDistanceTo(destination) + m.player.timer);
         Queue<Move> q = new PriorityQueue<>(1, byDistance);
 
-        used[player.getX()][player.getY()] = true;
+        dist[player.getX()][player.getY()] = player.timer;
         search.history.add(player);
-
+        if (player.coordinates.equals(destination)) {
+            return player;
+        }
         for (Move move : search.getMoves(player)) {
-            if (!used[move.coordinates.x][move.coordinates.y]) {
+            if (move.player.timer + 1 < dist[move.coordinates.x][move.coordinates.y]) {
+                dist[move.coordinates.x][move.coordinates.y] = move.player.timer + 1;
                 q.add(move);
             }
         }
@@ -43,20 +49,18 @@ public class AStar implements Strategy {
         while (!q.isEmpty()) {
             Move current = q.poll();
             player = current.execute();
-            if (player == null)
-                System.out.println("asdf");
-            if (used[player.getX()][player.getY()])
+            if (dist[player.getX()][player.getY()] < player.timer)
                 continue;
 
-            used[player.getX()][player.getY()] = true;
+            dist[player.getX()][player.getY()] = player.timer;
             search.history.add(player);
-
 
             if (player.coordinates.equals(destination)) {
                 return player;
             }
             for (Move move : search.getMoves(player)) {
-                if (!used[move.coordinates.x][move.coordinates.y]) {
+                if (move.player.timer + 1 < dist[move.coordinates.x][move.coordinates.y]) {
+                    dist[move.coordinates.x][move.coordinates.y] = move.player.timer + 1;
                     q.add(move);
                 }
             }

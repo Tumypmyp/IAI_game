@@ -13,7 +13,6 @@ public class Search {
     final History history = new History();
 
 
-
     Search(Game game, String name, int perception) {
         if (name.toLowerCase().charAt(0) == 'a') {
             this.strategy = new AStar(this);
@@ -27,21 +26,20 @@ public class Search {
     }
 
     Player run(boolean debug) {
-
-//        if (debug) {
-//            System.out.println(name + ":");
-//            System.out.println(game.getBoard());
-//            System.out.println(getHistory());
-//            System.out.flush();
-//        }
+//
+        if (debug) {
+            System.out.println(name + ":");
+            game.print();
+            System.out.flush();
+        }
         findAWayThrowPoints(Game.INF);
         history.solveCats();
 //        if (initialPlayer.status != Status.LOST) {
 //
 //            System.out.println(name + ":");
-//            System.out.println(game.getBoard());
+//        game.print();
 //            System.out.println(getHistory());
-//            System.out.println( history.solveCats());
+//            System.out.println(history.solveCats());
 //        }
 
 //        optimization
@@ -61,13 +59,15 @@ public class Search {
         list.removeIf(p -> p.status != Status.WON);
 
         list.sort(Comparator.comparingInt((Player p0) -> p0.timer));
-        if (list.isEmpty())
-            return initialPlayer;
-        Player player = list.get(0);
+        Player player;
+        if (!list.isEmpty())
+            player = list.get(0);
+        else
+            player = initialPlayer;
 
         if (debug) {
             System.out.println(name + ":");
-            System.out.println(game.getBoard());
+            game.print();
             if (player != null) {
                 System.out.println(player);
                 System.out.println(player.getPath());

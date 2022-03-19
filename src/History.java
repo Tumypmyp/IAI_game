@@ -95,11 +95,6 @@ public class History {
     }
 
     public int solveCats() {
-        int cnt = 0;
-        for (int i = 0; i < Game.ROWS; i++)
-            for (int j = 0; j < Game.COLUMNS; j++)
-                cnt += notCat[i][j] ? 1 : 0;
-//        return cnt;
         List<Pair<Point, Point>> variants = new ArrayList<>();
         for (int i = 0; i < Game.ROWS; i++)
             for (int j = 0; j < Game.COLUMNS; j++) {
