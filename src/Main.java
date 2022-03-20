@@ -3,20 +3,16 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
 //        interesting game case
-//        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", "Backtracking", 2);
-//        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", "A*", 2);
+//        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", new Search(new FastBacktracking(), 1));
+//        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", new Search(new AStar(), 1));
 
 
-//        runGame("[0, 0] [0, 4] [3, 0] [7, 8] [1, 0] [8, 8]", "A*1", 2);
-//        runGame("[0, 0] [0, 4] [3, 0] [7, 8] [1, 0] [8, 8]", 2, "B");
-//        runGame("[0, 0] [0, 3] [1, 3] [7, 8] [0, 0] [8, 8]", 1, "B");
+//        runGame("[0, 0] [0, 4] [3, 0] [7, 8] [1, 0] [8, 8]", new Search(new AStar(), 1));
+//        runGame("[0, 0] [0, 4] [3, 0] [7, 8] [1, 0] [8, 8]", new Search(new Backtracking(), 1));
 
 
-//        runGame("[0, 0] [0, 3] [1, 3] [7, 8] [0, 0] [8, 8]", 1, new AStar());
-//        runGame("[0, 0] [0, 3] [1, 3] [7, 8] [0, 0] [8, 8]", 1, new Backtracking());
-//
 //        runGame("[0, 0] [0, 3] [4, 5] [3, 0] [1, 6] [1, 2]", new Search(new AStar(), 2));
-//        runGame("[0, 0] [2, 3] [6, 2] [0, 8] [1, 8] [2, 8]", new Search(new AStar(), 2));
+        runGame("[0, 0] [2, 3] [6, 1] [0, 8] [1, 8] [2, 8]", new Search(new AStar(), 2));
 
 
 //        runGame("[0,0][4,4][4,8][8,8][8,8][0,8]", new Search(new AStar(), 1));
@@ -25,11 +21,10 @@ public class Main {
 
 //        runGame("[0,0][8,3][0,3][5,8][0,0][8,6]", new Search(  new FastBacktracking(), 2));
 //        runGame("[0,0][8,3][0,3][5,8][0,0][8,6]", new Search(  new Backtracking(), 2));
-//        runGame("[0, 0] [2, 3] [6, 2] [0, 8] [1, 8] [2, 8]", 2, new Backtracking());
 
-//        new Search(new AStar(), 1).setGame(new Game(45)).run(true);
-//        new Search(new AStar(), 2).setGame(new Game(45)).run(true);
-//        new Search(new AStar(), 2).setGame(new Game(26)).run(true);
+//        new Search(new Backtracking(), 1).setGame(new Game(537)).run(true);
+//        new Search(new AStar(), 1).setGame(new Game(537)).run(true);
+//        new Search(new FastBacktracking(), 1).setGame(new Game(537)).run(true);
 //        new Search(new Backtracking(), 2).setGame(new Game(26)).run(true);
 
 //          example of a random game
@@ -40,8 +35,11 @@ public class Main {
 //        run generated tests
 //        test(0, 1000, new Search(new Backtracking(), 1), new Search(new Backtracking(), 2));
 //        test(0, 1000, new Search(new AStar(), 2), new Search(new AStar(), 1));
-        test(0, 1000, new Search(new Backtracking(), 2), new Search(new AStar(), 2));
+//        test(1000, 3000, new Search(new Backtracking(), 2), new Search(new AStar(), 2));
 
+//        test(0, 1000, new Search(new Backtracking(), 1), false, false);
+//        test(0, 1000, new Search(new AStar(), 1), false, false);
+//        test(0, 1000, new Search(new FastBacktracking(), 1), false, false);
     }
 
     static void consoleTest() {
@@ -51,8 +49,15 @@ public class Main {
 
         runGame(input, new Search(new AStar(), perception));
         runGame(input, new Search(new Backtracking(), perception));
+        runGame(input, new Search(new FastBacktracking(), perception));
     }
 
+    /**
+     * Runs searching algorithm on the input test
+     *
+     * @param input  input test
+     * @param search searching algorithm
+     */
     static void runGame(String input, Search search) {
         String[] tokens = input.replaceAll("[^],0-8]", "").split("]");
 
@@ -60,15 +65,46 @@ public class Main {
         for (int i = 0; i < points.length; i++) {
             String[] idx = tokens[i].split(",");
             points[i] = new Point(Integer.parseInt(idx[0]), Integer.parseInt(idx[1]));
-            System.out.println(points[i]);
+            System.out.print(points[i]);
         }
         try {
-            Game game = new Game(points);
-            Player player = search.setGame(game).run(true);
-//            System.out.println(player);
+            search.setGame(new Game(points)).run(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    static void test(int L, int R, Search s, boolean debug, boolean dist) {
+        Map<Status, List<Integer>> statistic = new HashMap<>();
+        Map<Integer, Integer> distribution = new HashMap<>();
+        long startTime = System.nanoTime();
+
+        for (int i = L; i < R; i++) {
+            Player p = s.setGame(new Game(i)).run(false);
+
+            if (debug)
+                System.out.println(i + ": " + p);
+            statistic.computeIfAbsent(p.status, k -> new ArrayList<>());
+            statistic.get(p.status).add(p.timer);
+
+            distribution.put(p.timer, distribution.getOrDefault(p.timer, 0) + 1);
+        }
+
+        System.out.println("\n|" + s.strategy.getName() + "|\n|status|number af games|avg len|\n|---|---|---|");
+        for (Map.Entry<Status, List<Integer>> entry : statistic.entrySet()) {
+            OptionalDouble average = entry.getValue().stream().mapToDouble(a -> a).average();
+            double avg = average.isPresent() ? average.getAsDouble() : 0;
+            System.out.printf("|%s|%d|%f|\n", entry.getKey(), entry.getValue().size(), avg);
+        }
+        if (dist)
+            for (Map.Entry<Integer, Integer> entry : distribution.entrySet()) {
+                System.out.println(entry.getKey() + "\t" + entry.getValue());
+            }
+
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1000000;
+        System.out.println("Time taken: " + duration + "ms");
+        System.out.println("Average time: " + (double) duration / (R - L) + "ms");
     }
 
     static void test(int L, int R, Search s1, Search s2) {

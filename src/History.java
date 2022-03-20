@@ -12,7 +12,11 @@ public class History {
     final boolean[][] notCat = new boolean[Game.ROWS][Game.COLUMNS];
     final int[][] type = new int[Game.ROWS][Game.COLUMNS];
 
-
+    /**
+     * Updates information about the environment using the player sensors
+     *
+     * @param player the player used
+     */
     public void add(Player player) {
         players[player.getX()][player.getY()] = player;
         if (!player.haveCloak && player.status != Status.LOST)
@@ -35,6 +39,11 @@ public class History {
         }
     }
 
+    /**
+     * Updates information about where cat can not be
+     *
+     * @param p the point that is not seen by cat
+     */
     void addNotCat(Point p) {
         type[p.x][p.y] = 1;
         for (int i = -1; i < 2; i++)
@@ -55,11 +64,9 @@ public class History {
             return !cats.contains(move.coordinates);
         }
 
-
         Point p = move.coordinates;
         if (type[p.x][p.y] == 1)
             return true;
-//        return false;
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
                 if (Game.inside(new Point(p.x + i, p.y + j)) && !notCat[p.x + i][p.y + j])
@@ -69,6 +76,12 @@ public class History {
         return true;
     }
 
+    /**
+     * Finds all definitely safe moves for a player
+     *
+     * @param player the agent who asks for moves
+     * @return list of safe moves
+     */
     List<Move> getMoves(Player player) {
         List<Move> res = new ArrayList<>();
         for (Point p : Player.MOVES) {
@@ -89,7 +102,11 @@ public class History {
         }
     }
 
-    public int solveCats() {
+    /**
+     * Computes every possible cat positions on the board with brute force.
+     * Saves possible positions in the class field cats.
+     */
+    public void solveCats() {
         List<Pair<Point, Point>> variants = new ArrayList<>();
         for (int i = 0; i < Game.ROWS; i++)
             for (int j = 0; j < Game.COLUMNS; j++) {
@@ -135,7 +152,6 @@ public class History {
             cats.add(p.l);
             cats.add(p.r);
         }
-        return 0;
     }
 
     void twos(boolean[][] a) {

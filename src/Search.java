@@ -6,8 +6,8 @@ import java.util.Objects;
 public class Search {
     private Game game;
     private Player initialPlayer;
-    final private Strategy strategy;
-    History history;
+    private History history;
+    public Strategy strategy;
     int playerPerception;
 
     /**
@@ -42,7 +42,7 @@ public class Search {
      */
     Player run(boolean debug) {
         if (debug) {
-            System.out.println(strategy.getName() + ":");
+            System.out.println("\n" + strategy.getName() + ":");
             game.print();
         }
         long startTime = System.nanoTime();
@@ -70,17 +70,17 @@ public class Search {
         else
             player = initialPlayer;
 
+
         if (debug) {
             System.out.println(strategy.getName() + ":");
-            if (player != null) {
-                System.out.println(player);
-                System.out.println(player.getPath());
-                Game.showPath(player.getPath());
-            }
+            System.out.println(player);
+            System.out.println(player.getPath());
+            Game.showPath(player.getPath());
+
+            long endTime = System.nanoTime();
+            long duration = (endTime - startTime) / 1000000;
+            System.out.println("Time taken: " + duration + "ms");
         }
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime);
-        System.out.println(duration);
         return player;
     }
 
