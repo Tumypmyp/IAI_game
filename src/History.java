@@ -4,13 +4,12 @@ import java.util.List;
 import java.util.Set;
 
 public class History {
+
     Point BOOK;
     Point CLOAK;
     Set<Point> cats;
     final Player[][] players = new Player[Game.ROWS][Game.COLUMNS];
-
     final boolean[][] notCat = new boolean[Game.ROWS][Game.COLUMNS];
-    final boolean[][] seen = new boolean[Game.ROWS][Game.COLUMNS];
     final int[][] type = new int[Game.ROWS][Game.COLUMNS];
 
 
@@ -29,7 +28,6 @@ public class History {
                 if (!player.getVisibleCardsByPoint(p).contains(Card.SEEN)) {
                     addNotCat(p);
                 } else {
-                    seen[p.x][p.y] = true;
                     type[p.x][p.y] = 2;
                 }
             }
@@ -95,11 +93,15 @@ public class History {
         List<Pair<Point, Point>> variants = new ArrayList<>();
         for (int i = 0; i < Game.ROWS; i++)
             for (int j = 0; j < Game.COLUMNS; j++) {
+                if (notCat[i][j])
+                    continue;
                 Point FILCH = new Point(i, j);
                 if (possible(FILCH, 3)) {
 
                     for (int i1 = 0; i1 < Game.ROWS; i1++)
                         for (int j1 = 0; j1 < Game.COLUMNS; j1++) {
+                            if (notCat[i1][j1])
+                                continue;
                             Point CAT = new Point(i1, j1);
                             if (possible(CAT, 2)) {
                                 final boolean[][] twos = new boolean[Game.ROWS][Game.COLUMNS];
@@ -114,8 +116,15 @@ public class History {
                                             break;
                                         }
                                     }
-                                if (!have)
+                                try {
+                                    new Game(Game.START, FILCH, CAT, BOOK == null ? Game.START : BOOK,
+                                            CLOAK == null ? Game.START : CLOAK, players[0][0].game.EXIT);
+                                } catch (Exception e) {
+                                    have = true;
+                                }
+                                if (!have) {
                                     variants.add(new Pair<>(FILCH, CAT));
+                                }
                             }
                         }
                 }

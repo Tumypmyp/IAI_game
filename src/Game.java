@@ -28,7 +28,7 @@ public class Game {
      *               the book, the invisibility cloak and an exit door
      * @throws Exception when input is not valid
      */
-    Game(Point[] points) throws Exception {
+    Game(Point... points) throws Exception {
         if (points.length != 6 || points[0].x != 0 || points[0].y != 0)
             throw new Exception("bad input parameters");
         for (int i = 0; i < ROWS; i++) {

@@ -4,39 +4,47 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class AStar implements Strategy {
-//    final private Search search;
-//
-//    public AStar(Search search) {
-//        this.search = search;
-//    }
-
-    public Player findAWayToPoint(History history, Player player, Point destination) {
-        if (player == null || destination == null)
-            return null;
-        int[][] dist =  new int[Game.ROWS][Game.COLUMNS];
-        for (int i = 0; i < Game.ROWS; i++)
-            Arrays.fill(dist[i], 1000);
-        return findAWayToPoint(history, player, destination, dist);
-    }
-
+    /**
+     * @return string name of a strategy
+     */
     @Override
     public String getName() {
         return "A*";
     }
 
     /**
-     * Uses A* algorithm to find the shortest path to destination
+     * Finds a way for a player to a point
      *
+     * @param history     history that helps to determine all the possible directions
      * @param player      the initial agent
      * @param destination the point we go to
-     * @return the agent that came to destination
+     * @return the player that achieved the destination
+     */
+    @Override
+    public Player findAWayToPoint(History history, Player player, Point destination) {
+        if (player == null || destination == null)
+            return null;
+        int[][] dist = new int[Game.ROWS][Game.COLUMNS];
+        for (int i = 0; i < Game.ROWS; i++)
+            Arrays.fill(dist[i], 1000);
+        return findAWayToPoint(history, player, destination, dist);
+    }
+
+    /**
+     * Uses A* algorithm to find the shortest path to destination
+     *
+     * @param history     history that helps to determine all the possible directions
+     * @param player      the initial agent
+     * @param destination the point we go to
+     * @param dist        current shortest distance from the first player
+     * @return the agent that that achieved the destination
      */
     Player findAWayToPoint(History history, Player player, Point destination, int[][] dist) {
         if (player.coordinates.equals(destination))
             return player;
         Comparator<Move> byDistance = Comparator.comparingInt((Move m)
-                -> m.getMinimalMoves(destination) + m.player.timer);
-//                -> m.getDistanceTo(destination) + m.player.timer);
+//                -> m.getMinimalMoves(destination) + m.player.timer);
+                -> m.getDistanceTo(destination) + m.player.timer);
         Queue<Move> q = new PriorityQueue<>(1, byDistance);
 
         dist[player.getX()][player.getY()] = player.timer;

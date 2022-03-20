@@ -15,11 +15,20 @@ public class Main {
 //        runGame("[0, 0] [0, 3] [1, 3] [7, 8] [0, 0] [8, 8]", 1, new AStar());
 //        runGame("[0, 0] [0, 3] [1, 3] [7, 8] [0, 0] [8, 8]", 1, new Backtracking());
 //
-//        runGame("[0, 0] [2, 3] [6, 2] [0, 8] [1, 8] [2, 8]", 2, new AStar());
+//        runGame("[0, 0] [0, 3] [4, 5] [3, 0] [1, 6] [1, 2]", new Search(new AStar(), 2));
+//        runGame("[0, 0] [2, 3] [6, 2] [0, 8] [1, 8] [2, 8]", new Search(new AStar(), 2));
+
+
+//        runGame("[0,0][4,4][4,8][8,8][8,8][0,8]", new Search(new AStar(), 1));
+//        runGame("[0,0][4,4][4,8][8,8][8,8][0,8]", new Search(new AStar(), 1));
+
+
+//        runGame("[0,0][8,3][0,3][5,8][0,0][8,6]", new Search(  new FastBacktracking(), 2));
+//        runGame("[0,0][8,3][0,3][5,8][0,0][8,6]", new Search(  new Backtracking(), 2));
 //        runGame("[0, 0] [2, 3] [6, 2] [0, 8] [1, 8] [2, 8]", 2, new Backtracking());
 
-//        new Search(new AStar(), 2).setGame(new Game(0)).run(true);
-//        new Search(new Backtracking(), 2).setGame(new Game(0)).run(true);
+//        new Search(new AStar(), 1).setGame(new Game(45)).run(true);
+//        new Search(new AStar(), 2).setGame(new Game(45)).run(true);
 //        new Search(new AStar(), 2).setGame(new Game(26)).run(true);
 //        new Search(new Backtracking(), 2).setGame(new Game(26)).run(true);
 
@@ -29,7 +38,9 @@ public class Main {
 //        consoleTest();
 
 //        run generated tests
-        test(0, 1000, new Search(new AStar(), 2), new Search(new FastBacktracking(), 2));
+//        test(0, 1000, new Search(new Backtracking(), 1), new Search(new Backtracking(), 2));
+//        test(0, 1000, new Search(new AStar(), 2), new Search(new AStar(), 1));
+        test(0, 1000, new Search(new Backtracking(), 2), new Search(new AStar(), 2));
 
     }
 
