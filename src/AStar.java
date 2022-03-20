@@ -39,7 +39,7 @@ public class AStar implements Strategy {
         if (player.coordinates.equals(destination)) {
             return player;
         }
-        for (Move move : search.getMoves(player)) {
+        for (Move move : search.history.getMoves(player)) {
             if (move.player.timer + 1 < dist[move.coordinates.x][move.coordinates.y]) {
                 dist[move.coordinates.x][move.coordinates.y] = move.player.timer + 1;
                 q.add(move);
@@ -58,7 +58,7 @@ public class AStar implements Strategy {
             if (player.coordinates.equals(destination)) {
                 return player;
             }
-            for (Move move : search.getMoves(player)) {
+            for (Move move : search.history.getMoves(player)) {
                 if (move.player.timer + 1 < dist[move.coordinates.x][move.coordinates.y]) {
                     dist[move.coordinates.x][move.coordinates.y] = move.player.timer + 1;
                     q.add(move);

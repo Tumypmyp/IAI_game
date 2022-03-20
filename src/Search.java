@@ -89,9 +89,9 @@ public class Search {
     }
 
 
-    List<Move> getMoves(Player player) {
-        return history.getMoves(player);
-    }
+//    List<Move> getMoves(Player player) {
+//        return history.getMoves(player);
+//    }
 
     public String getHistory() {
         StringBuilder result = new StringBuilder();

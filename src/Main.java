@@ -3,8 +3,8 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
 //        interesting game case
-//        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 2, "Backtracking");
-//        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", 2, "A*");
+        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", "Backtracking", 2);
+        runGame("[0, 0] [5, 5] [3, 7] [1, 2] [8, 7] [8, 8]", "A*", 2);
 
 
 //        runGame("[0, 0] [0, 4] [3, 0] [7, 8] [1, 0] [8, 8]", "A*1", 2);
@@ -26,7 +26,7 @@ public class Main {
 //        consoleTest();
 
 //        run generated tests
-        test(0, 10000, 1);
+//        test(0, 1000, 2);
 
     }
 

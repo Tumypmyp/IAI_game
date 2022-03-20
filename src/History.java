@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 public class History {
-
     Point BOOK;
     Point CLOAK;
     //    Point CAT;

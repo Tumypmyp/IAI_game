@@ -42,7 +42,7 @@ public class Backtracking implements Strategy {
             return player;
 
         Queue<Move> q = new PriorityQueue<>(cmp);
-        q.addAll(search.getMoves(player));
+        q.addAll(search.history.getMoves(player));
         for (Move move : q) {
             if (!used[move.coordinates.x][move.coordinates.y]) {
                 Player p2 = findAWayToPoint(move.execute(), destination, cmp, used);
