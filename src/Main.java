@@ -12,13 +12,16 @@ public class Main {
 //        runGame("[0, 0] [0, 3] [1, 3] [7, 8] [0, 0] [8, 8]", 1, "B");
 
 
-//        runGame("[0, 0] [0, 3] [1, 3] [7, 8] [0, 0] [8, 8]", 1, "A*1");
-//        runGame("[0, 0] [0, 3] [1, 3] [7, 8] [0, 0] [8, 8]", 1, "B");
+//        runGame("[0, 0] [0, 3] [1, 3] [7, 8] [0, 0] [8, 8]", 1, new AStar());
+//        runGame("[0, 0] [0, 3] [1, 3] [7, 8] [0, 0] [8, 8]", 1, new Backtracking());
 //
-//        new Search(new Game(0), "A*", 2).run(true);
-//        new Search(new Game(3), "Back", 1).run(true);
-//        new Search(new Game(26), "A", 2).run(true);
-//        new Search(new Game(26), "Backtracking", 2).run(true);
+//        runGame("[0, 0] [2, 3] [6, 2] [0, 8] [1, 8] [2, 8]", 2, new AStar());
+//        runGame("[0, 0] [2, 3] [6, 2] [0, 8] [1, 8] [2, 8]", 2, new Backtracking());
+
+//        new Search(new AStar(), 2).setGame(new Game(0)).run(true);
+//        new Search(new Backtracking(), 2).setGame(new Game(0)).run(true);
+//        new Search(new AStar(), 2).setGame(new Game(26)).run(true);
+//        new Search(new Backtracking(), 2).setGame(new Game(26)).run(true);
 
 //          example of a random game
 
@@ -26,7 +29,7 @@ public class Main {
 //        consoleTest();
 
 //        run generated tests
-        test(0, 1000, 1);
+        test(0, 1000, new Search(new AStar(), 2), new Search(new FastBacktracking(), 2));
 
     }
 
@@ -35,11 +38,11 @@ public class Main {
         String input = scan.nextLine();
         int perception = scan.nextInt();
 
-        runGame(input, "A*", perception);
-        runGame(input, "Backtracking", perception);
+        runGame(input, new Search(new AStar(), perception));
+        runGame(input, new Search(new Backtracking(), perception));
     }
 
-    static void runGame(String input, String strategy, int perception) {
+    static void runGame(String input, Search search) {
         String[] tokens = input.replaceAll("[^],0-8]", "").split("]");
 
         Point[] points = new Point[tokens.length];
@@ -50,25 +53,23 @@ public class Main {
         }
         try {
             Game game = new Game(points);
-            Player player = new Search(game, strategy, perception).run(true);
+            Player player = search.setGame(game).run(true);
 //            System.out.println(player);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    static void test(int L, int R, int perception) {
+    static void test(int L, int R, Search s1, Search s2) {
 
         Map<Status, List<Integer>> statistic2 = new HashMap<>();
         Map<Status, List<Integer>> statistic1 = new HashMap<>();
         List<Integer> diff = new ArrayList<>();
 
         for (int i = L; i < R; i++) {
-            Search search1 = new Search(new Game(i), "backtracking", perception);
-            Search search2 = new Search(new Game(i), "A*", perception);
+            Player p1 = s1.setGame(new Game(i)).run(false);
+            Player p2 = s2.setGame(new Game(i)).run(false);
 
-            Player p1 = search1.run(false);
-            Player p2 = search2.run(false);
             System.out.println(i + ": " + p1 + "\t" + p2);
             if (p1.status != p2.status)
                 break;

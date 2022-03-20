@@ -1,3 +1,5 @@
 public interface Strategy {
-    Player findAWayToPoint(Player player, Point destination);
+    String getName();
+
+    Player findAWayToPoint(History history, Player player, Point destination);
 }

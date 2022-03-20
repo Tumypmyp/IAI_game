@@ -42,10 +42,10 @@ public class Player {
      *
      * @param game is environment of the agent
      */
-    Player(Game game, int perceptionType) {
+    Player(Game game, int playerPerception) {
         coordinates = new Point(0, 0);
         timer = 0;
-        this.perception = perceptionPoints[perceptionType - 1];
+        this.perception = perceptionPoints[playerPerception - 1];
         this.game = game;
         haveBook = false;
         haveCloak = false;

@@ -1,14 +1,9 @@
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class Backtracking implements Strategy {
-    Search search;
-
-    public Backtracking(Search search) {
-        this.search = search;
-    }
-
     /**
      * Searches for card in the direction of the destination
      *
@@ -16,12 +11,22 @@ public class Backtracking implements Strategy {
      * @param destination the assumed place of a card
      * @return the agent that found the card
      */
-    public Player findAWayToPoint(Player player, Point destination) {
+    public Player findAWayToPoint(History history, Player player, Point destination) {
         if (player == null || destination == null || player.status == Status.LOST)
             return null;
-//        Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getMinimalMoves(destination));
-        Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getDistanceTo(destination));
-        return findAWayToPoint(player, destination, byDistance, new boolean[Game.ROWS][Game.COLUMNS]);
+        Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getMinimalMoves(destination));
+//        Comparator<Move> byDistance = Comparator.comparingInt((Move m) -> m.getDistanceTo(destination));
+
+
+        int[][] dist = new int[Game.ROWS][Game.COLUMNS];
+        for (int i = 0; i < Game.ROWS; i++)
+            Arrays.fill(dist[i], 1000);
+        return findAWayToPoint(history, player, destination, byDistance, dist);
+    }
+
+    @Override
+    public String getName() {
+        return "Backtracking (full brute force with clipping)";
     }
 
     /**
@@ -29,26 +34,27 @@ public class Backtracking implements Strategy {
      *
      * @param player the agent the algorithm working on
      * @param cmp    comparator used for neighbourhood priorities
-     * @param used   what places where visited
      * @return the agent that found the card
      */
-    public Player findAWayToPoint(Player player, Point destination, Comparator<Move> cmp, boolean[][] used) {
-        used[player.getX()][player.getY()] = true;
-        search.history.add(player);
+    public Player findAWayToPoint(History history, Player player, Point destination, Comparator<Move> cmp, int[][] dist) {
+        dist[player.getX()][player.getY()] = player.timer;
+        history.add(player);
 
         if (player.coordinates.equals(destination))
             return player;
 
         Queue<Move> q = new PriorityQueue<>(cmp);
-        q.addAll(search.history.getMoves(player));
-        while(!q.isEmpty()) {
+        q.addAll(history.getMoves(player));
+
+        Player minPlayer = null;
+        while (!q.isEmpty()) {
             Move move = q.poll();
-            if (!used[move.coordinates.x][move.coordinates.y]) {
-                Player p2 = findAWayToPoint(move.execute(), destination, cmp, used);
-                if (p2 != null)
-                    return p2;
+            if (move.player.timer + 1 < dist[move.coordinates.x][move.coordinates.y]) {
+                Player p2 = findAWayToPoint(history, move.execute(), destination, cmp, dist);
+                if (minPlayer == null || (p2 != null && p2.timer < minPlayer.timer))
+                    minPlayer = p2;
             }
         }
-        return null;
+        return minPlayer;
     }
 }

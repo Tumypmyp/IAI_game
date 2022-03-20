@@ -5,37 +5,35 @@ import java.util.Objects;
 
 
 public class Search {
-    final private Game game;
-    final private Player initialPlayer;
-
-    final private String name;
+    private Game game;
+    private Player initialPlayer;
     final private Strategy strategy;
-    final History history = new History();
+    History history;
+    int playerPerception;
 
 
-    Search(Game game, String name, int perception) {
-        if (name.toLowerCase().charAt(0) == 'a') {
-            this.strategy = new AStar(this);
-        } else {
-            this.strategy = new Backtracking(this);
-        }
-
-        this.name = name;
-        this.game = game;
-        initialPlayer = new Player(game, perception);
+    Search(Strategy strategy, int playerPerception) {
+        this.strategy = strategy;
+        this.playerPerception = playerPerception;
     }
+
+    Search setGame(Game game) {
+        this.game = game;
+        initialPlayer = new Player(game, playerPerception);
+        history = new History();
+        return this;
+    }
+
 
     Player run(boolean debug) {
         if (debug) {
-            System.out.println(name + ":");
+            System.out.println(strategy.getName() + ":");
             game.print();
         }
+        long startTime = System.nanoTime();
+
         findAWayThroughPoints(Game.INF);
         history.solveCats();
-//        optimization
-//        if (CLOAK == null) {
-//            return findWayThrowPoints(BOOK, EXIT);
-//        }
         findAWayThroughPoints(history.CLOAK, Game.INF);
         history.solveCats();
 
@@ -56,14 +54,16 @@ public class Search {
             player = initialPlayer;
 
         if (debug) {
-            System.out.println(name + ":");
-            game.print();
+            System.out.println(strategy.getName() + ":");
             if (player != null) {
                 System.out.println(player);
                 System.out.println(player.getPath());
                 Game.showPath(player.getPath());
             }
         }
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
+        System.out.println(duration);
         return player;
     }
 
@@ -73,7 +73,7 @@ public class Search {
 
     public Player findAWayThroughPoints(Player player, Point... points) {
         for (Point v : points) {
-            player = strategy.findAWayToPoint(player, v);
+            player = strategy.findAWayToPoint(history, player, v);
         }
         return player;
     }
