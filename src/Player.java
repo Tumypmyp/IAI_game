@@ -33,7 +33,6 @@ public class Player {
             new Point(1, -1), new Point(1, 0), new Point(1, 1)
     };
 
-
     Player parent;
     Game game;
     Status status;

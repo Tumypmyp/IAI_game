@@ -2,8 +2,6 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-import static java.lang.System.exit;
-
 public class Backtracking implements Strategy {
     Search search;
 
@@ -43,7 +41,8 @@ public class Backtracking implements Strategy {
 
         Queue<Move> q = new PriorityQueue<>(cmp);
         q.addAll(search.history.getMoves(player));
-        for (Move move : q) {
+        while(!q.isEmpty()) {
+            Move move = q.poll();
             if (!used[move.coordinates.x][move.coordinates.y]) {
                 Player p2 = findAWayToPoint(move.execute(), destination, cmp, used);
                 if (p2 != null)

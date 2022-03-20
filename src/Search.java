@@ -26,34 +26,24 @@ public class Search {
     }
 
     Player run(boolean debug) {
-//
         if (debug) {
             System.out.println(name + ":");
             game.print();
-            System.out.flush();
         }
-        findAWayThrowPoints(Game.INF);
+        findAWayThroughPoints(Game.INF);
         history.solveCats();
-//        if (initialPlayer.status != Status.LOST) {
-//
-//            System.out.println(name + ":");
-//        game.print();
-//            System.out.println(getHistory());
-//            System.out.println(history.solveCats());
-//        }
-
 //        optimization
 //        if (CLOAK == null) {
 //            return findWayThrowPoints(BOOK, EXIT);
 //        }
-        findAWayThrowPoints(history.CLOAK, Game.INF);
+        findAWayThroughPoints(history.CLOAK, Game.INF);
         history.solveCats();
 
         List<Player> list = new ArrayList<>();
 
-        list.add(findAWayThrowPoints(history.BOOK, game.EXIT));
-        list.add(findAWayThrowPoints(history.BOOK, history.CLOAK, game.EXIT));
-        list.add(findAWayThrowPoints(history.CLOAK, history.BOOK, game.EXIT));
+        list.add(findAWayThroughPoints(history.BOOK, game.EXIT));
+        list.add(findAWayThroughPoints(history.BOOK, history.CLOAK, game.EXIT));
+        list.add(findAWayThroughPoints(history.CLOAK, history.BOOK, game.EXIT));
 
         list.removeIf(Objects::isNull);
         list.removeIf(p -> p.status != Status.WON);
@@ -77,31 +67,14 @@ public class Search {
         return player;
     }
 
-    public Player findAWayThrowPoints(Point... points) {
-        return findAWayThrowPoints(initialPlayer, points);
+    public Player findAWayThroughPoints(Point... points) {
+        return findAWayThroughPoints(initialPlayer, points);
     }
 
-    public Player findAWayThrowPoints(Player player, Point... points) {
+    public Player findAWayThroughPoints(Player player, Point... points) {
         for (Point v : points) {
             player = strategy.findAWayToPoint(player, v);
         }
         return player;
-    }
-
-
-//    List<Move> getMoves(Player player) {
-//        return history.getMoves(player);
-//    }
-
-    public String getHistory() {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < Game.ROWS; i++) {
-            for (int j = 0; j < Game.COLUMNS; j++) {
-                Player p = history.players[i][j];
-                result.append(p == null ? "-1" : p.timer).append("\t");
-            }
-            result.append("\n");
-        }
-        return result.toString();
     }
 }

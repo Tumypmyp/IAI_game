@@ -6,8 +6,6 @@ import java.util.Set;
 public class History {
     Point BOOK;
     Point CLOAK;
-    //    Point CAT;
-//    Point FILCH;
     Set<Point> cats;
     final Player[][] players = new Player[Game.ROWS][Game.COLUMNS];
 

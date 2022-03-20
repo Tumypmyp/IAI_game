@@ -230,8 +230,6 @@ public class Game {
                 System.out.print(history[i][j] == 0 ? ".\t" : history[i][j] - 1 + "\t");
             System.out.println();
         }
-
     }
-
 }
 
